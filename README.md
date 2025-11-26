@@ -68,5 +68,3 @@ Use this account to test the Admin features:
 * **Name:** Mohammed Mamoun Abdel Razzaq Abdelrazeq
 * **Student ID:** G221210577
 * **Group:** 1B
-
-hellllllooooooooooo

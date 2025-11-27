@@ -22,7 +22,6 @@ C:\Users\ahmed\Desktop\web MVC project\fitnessCenter\obj\Debug\net9.0\rjsmcshtml
 C:\Users\ahmed\Desktop\web MVC project\fitnessCenter\obj\Debug\net9.0\scopedcss\Views\Shared\_Layout.cshtml.rz.scp.css
 C:\Users\ahmed\Desktop\web MVC project\fitnessCenter\obj\Debug\net9.0\scopedcss\bundle\fitnessCenter.styles.css
 C:\Users\ahmed\Desktop\web MVC project\fitnessCenter\obj\Debug\net9.0\scopedcss\projectbundle\fitnessCenter.bundle.scp.css
-C:\Users\ahmed\Desktop\web MVC project\fitnessCenter\obj\Debug\net9.0\compressed\obfexke4lf-b9sayid5wm.gz
 C:\Users\ahmed\Desktop\web MVC project\fitnessCenter\obj\Debug\net9.0\compressed\qjlyl7kjyz-61n19gt1b8.gz
 C:\Users\ahmed\Desktop\web MVC project\fitnessCenter\obj\Debug\net9.0\compressed\qart9tvsvo-xtxxf3hu2r.gz
 C:\Users\ahmed\Desktop\web MVC project\fitnessCenter\obj\Debug\net9.0\compressed\ow5tg5z678-bqjiyaj88i.gz
@@ -84,8 +83,6 @@ C:\Users\ahmed\Desktop\web MVC project\fitnessCenter\obj\Debug\net9.0\compressed
 C:\Users\ahmed\Desktop\web MVC project\fitnessCenter\obj\Debug\net9.0\compressed\37s4fogr3h-muycvpuwrr.gz
 C:\Users\ahmed\Desktop\web MVC project\fitnessCenter\obj\Debug\net9.0\compressed\bulutfa5c0-87fc7y1x7t.gz
 C:\Users\ahmed\Desktop\web MVC project\fitnessCenter\obj\Debug\net9.0\compressed\uwl65q8viz-mlv21k5csn.gz
-C:\Users\ahmed\Desktop\web MVC project\fitnessCenter\obj\Debug\net9.0\compressed\ysguarsgly-tx7eiwii23.gz
-C:\Users\ahmed\Desktop\web MVC project\fitnessCenter\obj\Debug\net9.0\compressed\rze5yjgkcg-tx7eiwii23.gz
 C:\Users\ahmed\Desktop\web MVC project\fitnessCenter\obj\Debug\net9.0\staticwebassets.build.json
 C:\Users\ahmed\Desktop\web MVC project\fitnessCenter\obj\Debug\net9.0\staticwebassets.build.json.cache
 C:\Users\ahmed\Desktop\web MVC project\fitnessCenter\obj\Debug\net9.0\staticwebassets.development.json
@@ -95,3 +92,6 @@ C:\Users\ahmed\Desktop\web MVC project\fitnessCenter\obj\Debug\net9.0\refint\fit
 C:\Users\ahmed\Desktop\web MVC project\fitnessCenter\obj\Debug\net9.0\fitnessCenter.pdb
 C:\Users\ahmed\Desktop\web MVC project\fitnessCenter\obj\Debug\net9.0\fitnessCenter.genruntimeconfig.cache
 C:\Users\ahmed\Desktop\web MVC project\fitnessCenter\obj\Debug\net9.0\ref\fitnessCenter.dll
+C:\Users\ahmed\Desktop\web MVC project\fitnessCenter\obj\Debug\net9.0\compressed\obfexke4lf-za940otjar.gz
+C:\Users\ahmed\Desktop\web MVC project\fitnessCenter\obj\Debug\net9.0\compressed\ysguarsgly-tx7eiwii23.gz
+C:\Users\ahmed\Desktop\web MVC project\fitnessCenter\obj\Debug\net9.0\compressed\rze5yjgkcg-tx7eiwii23.gz

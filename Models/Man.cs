@@ -1,13 +1,13 @@
 class Man
 {
-    int manId { get; set; }
-    string name { get; set; }
-    string userName { get; set; }
-    string password { get; set; }
-    int boy { get; set; }
-    int wight { get; set; }
-    int age { get; set; }
-    string whoIam {get; set; }
+    public int manId { get; set; }
+    public string name { get; set; }
+    public string userName { get; set; }
+    public string password { get; set; }
+    public int boy { get; set; }
+    public int wight { get; set; }
+    public int age { get; set; }
+    public string whoIam {get; set; }
     public List<Notification>? notifications;
 
     public Man(string name, string userName, string password, int boy, int wight, int age, string whoIam)

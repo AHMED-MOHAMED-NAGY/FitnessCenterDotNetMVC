@@ -6,7 +6,7 @@ class Cotch : Man
     List <string> available_times;
     List<User> users_that_i_train;
 
-    public Cotch(string name, string userName, string password, int boy, int wight, int age, string cotchName)
+    public Cotch(string name, string userName, string password, int boy, int wight, int age)
         : base(name, userName, password, boy, wight, age, "cotch")
     {
         cotch_status = "free";

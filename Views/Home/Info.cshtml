@@ -1,1 +1,130 @@
-this is info page
+﻿@{
+    ViewData["Title"] = "Info";
+}
+
+<style>
+
+    body 
+    {
+        background: url('/images/info.jpg') no-repeat center center fixed;
+        background-size: cover;
+        background-position: center;
+    }
+
+    .info-box 
+    {
+        background: rgba(0, 0, 0, 0.55), url('/images/info-box.jpg');
+        background-image: url('/images/info-box.jpg');
+        background-size: cover;
+        background-position: center;
+        padding: 40px;
+        border-radius: 15px;
+        max-width: 900px;
+        margin: 70px auto;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+    }
+
+    h2 
+    {
+        text-align: center;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 25px;
+        color: #fff;
+        text-shadow: 0 0 15px #000;
+    }
+
+    h3 
+    {
+        font-size: 1.6rem;
+        margin-top: 25px;
+        color: #fff;
+        font-weight: 700;
+        text-shadow: 0 0 12px #000;
+    }
+
+    p, li 
+    {
+        color: #eee;
+        font-size: 18px;
+        line-height: 1.7;
+        text-shadow: 0 0 8px #000;
+    }
+
+    ul 
+    {
+        padding-left: 20px;
+    }
+
+    .highlight 
+    {
+        font-weight: 700;
+        color: #4da3ff;
+        text-shadow: 0 0 10px #000;
+    }
+
+    footer, footer span, footer p, footer div {
+        color: #ffffff !important;
+        opacity: 1 !important;
+        font-weight: 700 !important;
+        text-shadow: 0 0 10px rgba(0,0,0,1) !important;
+    }
+
+    footer a 
+    {
+        color: #00a2ff !important;
+        font-weight: 700 !important;
+        text-shadow: 0 0 10px rgba(0,0,0,1) !important;
+    }
+
+</style>
+
+<div class="info-box">
+
+    <h2>Fitness Merkezimiz Hakkında</h2>
+
+    <p>
+        Fitness Merkezimiz tek bir amaç düşünülerek yaratıldı:
+        <span class="highlight">İnsanların kendilerinin en güçlü, en sağlıklı versiyonu olmalarına yardımcı olmak.</span><br />
+        Küçük bir fitness tutkunu grubu olarak başladık ve tutku ve özveriyle,
+        hayalimizi herkesin eğitim alabileceği ve hayatını değiştirebileceği gerçek bir spor merkezine dönüştürdük.
+    </p>
+
+    <h3>💪 Misyonumuz</h3>
+    <p>
+        Sağlıklı bir yaşam tarzı oluşturmak için birbirimize ilham veren bir topluluk oluşturmayı,
+        motive edici bir ortam sağlamayı ve herkese destek olmayı hedefliyoruz.
+    </p>
+
+    <h3>⭐ Kurucular</h3>
+    <ul>
+        <li><strong>Mohammed Abdelrazeq</strong> – Kurucu Ortak ve Program Tasarımcısı</li>
+        <li><strong>Ahmed Abouattia</strong> – Kurucu Ortak ve Program Tasarımcısı</li>
+        <li><strong>Takım Personeli</strong> – Eğitmenler ve Beslenme Uzmanları</li>
+    </ul>
+
+    <h3>🔥 Neden Bizi Seçmelisiniz?</h3>
+    <ul>
+        <li>Modern ve tam donanımlı spor salonu</li>
+        <li>Profesyonel kişisel antrenörler</li>
+        <li>Her seviyeye uygun özelleştirilmiş egzersiz programları</li>
+        <li>Motive edici atmosfer ve destekleyici ekip</li>
+        <li>Temiz, güvenli ve konforlu eğitim alanı</li>
+    </ul>
+
+    <h3>⏱ Çalışma Saatleri</h3>
+    <p>
+        Pazartesi – Cumartesi: 8:00 AM – 10:30 PM<br />
+        Pazar: Kapalı
+    </p>
+
+    <h3>📍 Konum</h3>
+    <p>Sakarya, Turkey</p>
+
+    <h3>📞 Bize Ulaşın</h3>
+    <p>
+        Telefon: +90 555 123 4567<br />
+        E-posta: fitnesscenter@gmail.com
+    </p>
+
+</div>

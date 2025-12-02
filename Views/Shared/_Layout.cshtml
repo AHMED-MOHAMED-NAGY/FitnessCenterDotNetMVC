@@ -28,12 +28,15 @@
                         </li>
                     </ul>
                     <ul class="navbar-nav ms-auto">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Login">Login</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Register">Register</a>
-                        </li>
+                        @if (ViewContext.RouteData.Values["action"].ToString() != "Login" && ViewContext.RouteData.Values["action"].ToString() != "Register")
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Login">Login</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Register">Register</a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>
@@ -54,5 +57,23 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+    <style> 
+        .navbar 
+        {
+            background-color: rgba(0, 0, 0, 0.35) !important;
+            backdrop-filter: blur(6px);
+        }
+
+        .navbar a, .navbar-brand 
+        {
+            color: #ffffff !important;
+            font-weight: 600;
+        }
+
+        .navbar a:hover 
+        {
+            color: #00a2ff !important;
+        }
+    </style>
 </body>
 </html>

@@ -28,7 +28,7 @@
                         </li>
                     </ul>
                     <ul class="navbar-nav ms-auto">
-                        @if (ViewContext.RouteData.Values["action"].ToString() != "Login" && ViewContext.RouteData.Values["action"].ToString() != "Register")
+                        @if (ViewContext.RouteData.Values["action"].ToString() != "Login" && ViewContext.RouteData.Values["action"].ToString() != "Register" && ViewContext.RouteData.Values["action"].ToString() != "ForgotPassword")
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Login">Login</a>

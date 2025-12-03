@@ -3,6 +3,9 @@ wwwroot\favicon.ico
 wwwroot\images\indexBackground.jpg
 wwwroot\images\info-box.jpg
 wwwroot\images\info.jpg
+wwwroot\images\login.jpg
+wwwroot\images\register-box.jpg
+wwwroot\images\register.jpg
 wwwroot\js\site.js
 wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css
 wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css.map

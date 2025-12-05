@@ -1,17 +1,18 @@
 using Microsoft.Net.Http.Headers;
+using System.ComponentModel.DataAnnotations;
 
-class User : Man
+public class User : Man
 {
-    int userId { get; set; }
-    DailyGoal? dailyGoal { get; set; }
-    Cotch? cotch; // it will be available after read from db available cotchs has the same exercise
-    string? subscribeStatus { get; set; } // left 30 days - finish
-    int leftDaySubscribe;
-    Exercise? exercise { get; set; } // this will be some thing like dropdown list 
-                                    // after exercise selected cotch dropdown list will be available
+    public DailyGoal? dailyGoal { get; set; }
+    public Cotch? cotch; // it will be available after read from db available cotchs has the same exercise
+    public string? subscribeStatus { get; set; } // left 30 days - finish
+    public int leftDaySubscribe;
+    public Exercise? exercise { get; set; } // this will be some thing like dropdown list 
+                                            // after exercise selected cotch dropdown list will be available
 
 
     // functions
+    User() { }
     public User(string name, string userName, string password, int boy, int wight, int age, string cotchName)
         : base(name, userName, password, boy, wight, age, "user")
     {

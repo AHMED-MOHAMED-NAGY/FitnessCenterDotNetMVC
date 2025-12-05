@@ -1,8 +1,10 @@
-class Admin : Man
+using System.ComponentModel.DataAnnotations;
+
+public class Admin : Man
 {
-    int adminId;
-    
+
     // functions 
+    Admin() { }
     public Admin(string name, string userName, string password, int boy, int wight, int age)
         : base(name, userName, password, boy, wight, age, "admin")
     {

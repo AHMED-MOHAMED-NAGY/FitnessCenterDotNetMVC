@@ -1,11 +1,15 @@
+using System.ComponentModel.DataAnnotations;
 using System.Runtime.InteropServices;
 
-class Notification
+public class Notification
 {
-    int notId { get; set; }
-    string title { get; set; }
-    string msj { get; set; }
-    string date { get; set; }
+    [Key]
+    public int notId { get; set; }
+    public string title { get; set; }
+    public string msj { get; set; }
+    public string date { get; set; }
+
+    Notification() { }
 
     public Notification(string title, string msj)
     {

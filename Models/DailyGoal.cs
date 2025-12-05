@@ -1,10 +1,27 @@
-class DailyGoal
-{
-    int goalId;
-    bool status; // is done or not ...
-    string? goal;
+using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
-    DailyGoal (string goal)
+//[Keyless]
+public class DailyGoal
+{
+    [Key]
+    public int goalId { get; set; }
+    public bool status { get; set; } // is done or not ...
+    public string? goal { get; set; }
+    public string date { get; set; }
+
+
+    //public int UserId { get; set; }
+    //public User User { get; set; }
+
+
+    // for database
+    DailyGoal() 
+    {
+        //status = false;
+        //goal = null;
+    }
+    DailyGoal (string? goal)
     {
         this.goal = goal;
         status = false;

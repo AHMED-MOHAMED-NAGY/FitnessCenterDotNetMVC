@@ -1,6 +1,9 @@
-class Exercise
+using System.ComponentModel.DataAnnotations;
+
+public class Exercise
 {
-    int exId { get; set; }
-    string? exerciseType { get; set; }
-    List<Cotch>? availCotchs;
+    [Key]
+    public int exId { get; set; }
+    public string? exerciseType { get; set; }
+    public List<Cotch>? availCotchs;
 }

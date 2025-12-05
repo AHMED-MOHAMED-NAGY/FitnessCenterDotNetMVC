@@ -1,0 +1,8 @@
+this is a to do list to make creating tssks easy to understand
+
+1. change register form as man class 
+2. redirect login and register forms
+3. create admin and user controllers 
+4. fill all action results 
+5. link DB
+6. authorization and Authentication

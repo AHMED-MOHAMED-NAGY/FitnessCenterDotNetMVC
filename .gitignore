@@ -1,0 +1,22 @@
+# Build folders
+bin/
+obj/
+
+# Visual Studio settings
+.vs/
+*.user
+*.suo
+
+# Logs
+*.log
+
+# Cache files
+*.cache
+*.db
+
+# Temporary files
+*.tmp
+*.temp
+
+# Publish outputs
+*/publish/

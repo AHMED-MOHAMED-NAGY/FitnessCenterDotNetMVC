@@ -1,29 +1,40 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using fitnessCenter.Models;
+<<<<<<< Updated upstream
 using Microsoft.Extensions.Primitives;
+=======
+using fitnessCenter.Services;
+>>>>>>> Stashed changes
 
 namespace fitnessCenter.Controllers;
 
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
+<<<<<<< Updated upstream
     private FitnessContext f_db = new FitnessContext();
+=======
+    private readonly EmailSender _emailSender;
+>>>>>>> Stashed changes
 
-    public HomeController(ILogger<HomeController> logger)
+    public HomeController(ILogger<HomeController> logger, EmailSender emailSender)
     {
         _logger = logger;
+        _emailSender = emailSender;
     }
 
     public IActionResult Index()
     {
         return View();
     }
+
     public IActionResult Login()
     {
         return View();
     }
 
+<<<<<<< Updated upstream
     [HttpPost]
     public IActionResult LoginResult(Man m) 
     {
@@ -76,11 +87,14 @@ public class HomeController : Controller
         return RedirectToAction("Login");
     }
 
+=======
+>>>>>>> Stashed changes
     public IActionResult Register()
     {
         return View();
     }
 
+<<<<<<< Updated upstream
     [HttpPost]
     public IActionResult RegisterResult(Man m)
     {
@@ -97,6 +111,8 @@ public class HomeController : Controller
         TempData["err"] = "please fill all sections right!!";
         return RedirectToAction("Register");
     }
+=======
+>>>>>>> Stashed changes
     public IActionResult Info()
     {
         return View();
@@ -106,11 +122,72 @@ public class HomeController : Controller
     {
         return View();
     }
+
+    //Forgot Password (GET)
     public IActionResult ForgotPassword()
     {
         return View();
     }
 
+    //Forgot Password (POST)
+    [HttpPost]
+    public async Task<IActionResult> ForgotPassword(string email)
+    {
+        if (string.IsNullOrEmpty(email))
+        {
+            ViewBag.Message = "Lütfen email adresinizi giriniz.";
+            return View();
+        }
+
+        //(Token)
+        string token = Guid.NewGuid().ToString();
+
+        //build the link of reset password
+        string resetLink = Url.Action(
+            "ResetPassword",
+            "Home",
+            new { token = token },
+            Request.Scheme
+        );
+
+        //the email massege
+        string subject = "Şifre Sıfırlama Bağlantısı";
+        string body =
+            $"<h3>Şifre Sıfırlama</h3>" +
+            $"<p>Şifrenizi sıfırlamak için aşağıdaki bağlantıya tıklayın:</p>" +
+            $"<a href='{resetLink}'>Şifreyi Sıfırla</a>";
+
+        //send the mail
+        await _emailSender.SendEmailAsync(email, subject, body);
+
+        ViewBag.Message = "Sıfırlama bağlantısı email adresinize gönderildi!";
+        return View();
+    }
+
+    //Reset Password (GET)
+    public IActionResult ResetPassword(string token)
+    {
+        if (string.IsNullOrEmpty(token))
+        {
+            return BadRequest("Geçersiz token.");
+        }
+
+        ViewBag.Token = token;
+        return View();
+    }
+
+    //Reset Password (POST)
+    [HttpPost]
+    public IActionResult ResetPassword(string token, string newPassword)
+    {
+        if (string.IsNullOrEmpty(token))
+            return BadRequest("Token bulunamadı.");
+
+        ViewBag.Message = "Şifreniz başarıyla güncellendi!";
+        return View();
+    }
+
+    // Default Error Handler
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {

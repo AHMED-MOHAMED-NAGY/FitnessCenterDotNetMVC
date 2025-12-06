@@ -1,7 +1,11 @@
+using fitnessCenter.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddTransient<EmailSender>();
 
 var app = builder.Build();
 

@@ -12,16 +12,7 @@ public class User : Man
 
 
     // functions
-    User() { }
-    public User(string name, string userName, string password, int boy, int wight, int age, string cotchName)
-        : base(name, userName, password, boy, wight, age, "user")
-    {
-        set_cotch(cotchName);
-        set_exercise();
-        subscribeStatus = "subscribe not found!!";
-        leftDaySubscribe = 0;
-        notifications = new List<Notification>();
-    }
+
     public void set_cotch(string cotchName)
     {
         // search in DB and set the cotch

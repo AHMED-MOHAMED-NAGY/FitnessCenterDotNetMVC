@@ -1,8 +1,12 @@
 this is a to do list to make creating tssks easy to understand
 
-1. change register form as man class 
-2. redirect login and register forms
-3. create admin and user controllers 
+1. change register and login form as man class ==> DONE 
+2. redirect login and register forms ============> DONE
+3. create admin controllers
+3. create user controllers
+3. create cotch controllers
 4. fill all action results 
-5. link DB
+5. link DB ======================================> DONE
 6. authorization and Authentication
+7. hashing the password =========================> DONE
+8. forget password page 

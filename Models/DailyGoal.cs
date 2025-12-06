@@ -21,9 +21,9 @@ public class DailyGoal
         //status = false;
         //goal = null;
     }
-    DailyGoal (string? goal)
-    {
-        this.goal = goal;
-        status = false;
-    }
+    // DailyGoal (string? goal)
+    // {
+    //     this.goal = goal;
+    //     status = false;
+    // }
 }

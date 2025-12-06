@@ -75,11 +75,18 @@ namespace fitnessCenter.Migrations
                     b.Property<int>("boy")
                         .HasColumnType("integer");
 
+                    b.Property<string>("email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("name")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("password")
+                    b.Property<long>("number")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("passwordHash")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -87,9 +94,8 @@ namespace fitnessCenter.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("whoIam")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("whoIam")
+                        .HasColumnType("integer");
 
                     b.Property<int>("wight")
                         .HasColumnType("integer");

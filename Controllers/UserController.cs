@@ -16,7 +16,7 @@ namespace fitnessCenter.Controllers
             User u1 = f_db.users.FirstOrDefault(x => x.manId == i);
             if (u1 == null) 
             {
-                TempData["HataMsj"] = "user is not found !!";
+                TempData["err"] = "user is not found !!";
                 return RedirectToAction("Hata");
             }
             // select user from db with user id

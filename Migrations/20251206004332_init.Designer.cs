@@ -12,8 +12,8 @@ using fitnessCenter.Models;
 namespace fitnessCenter.Migrations
 {
     [DbContext(typeof(FitnessContext))]
-    [Migration("20251205205117_init2")]
-    partial class init2
+    [Migration("20251206004332_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,8 +33,9 @@ namespace fitnessCenter.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("goalId"));
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
+                    b.Property<string>("date")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("goal")
                         .HasColumnType("text");
@@ -43,8 +44,6 @@ namespace fitnessCenter.Migrations
                         .HasColumnType("boolean");
 
                     b.HasKey("goalId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("dailyGoals");
                 });
@@ -79,11 +78,18 @@ namespace fitnessCenter.Migrations
                     b.Property<int>("boy")
                         .HasColumnType("integer");
 
+                    b.Property<string>("email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("name")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("password")
+                    b.Property<long>("number")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("passwordHash")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -91,9 +97,8 @@ namespace fitnessCenter.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("whoIam")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("whoIam")
+                        .HasColumnType("integer");
 
                     b.Property<int>("wight")
                         .HasColumnType("integer");
@@ -149,7 +154,7 @@ namespace fitnessCenter.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.ToTable("Cotchs", (string)null);
+                    b.ToTable("Cotches", (string)null);
                 });
 
             modelBuilder.Entity("User", b =>
@@ -157,6 +162,9 @@ namespace fitnessCenter.Migrations
                     b.HasBaseType("Man");
 
                     b.Property<int?>("CotchmanId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("dailyGoalgoalId")
                         .HasColumnType("integer");
 
                     b.Property<int?>("exerciseexId")
@@ -167,20 +175,11 @@ namespace fitnessCenter.Migrations
 
                     b.HasIndex("CotchmanId");
 
+                    b.HasIndex("dailyGoalgoalId");
+
                     b.HasIndex("exerciseexId");
 
                     b.ToTable("Users", (string)null);
-                });
-
-            modelBuilder.Entity("DailyGoal", b =>
-                {
-                    b.HasOne("User", "User")
-                        .WithMany("dailyGoals")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Admin", b =>
@@ -207,6 +206,10 @@ namespace fitnessCenter.Migrations
                         .WithMany("users_that_i_train")
                         .HasForeignKey("CotchmanId");
 
+                    b.HasOne("DailyGoal", "dailyGoal")
+                        .WithMany()
+                        .HasForeignKey("dailyGoalgoalId");
+
                     b.HasOne("Exercise", "exercise")
                         .WithMany()
                         .HasForeignKey("exerciseexId");
@@ -217,17 +220,14 @@ namespace fitnessCenter.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("dailyGoal");
+
                     b.Navigation("exercise");
                 });
 
             modelBuilder.Entity("Cotch", b =>
                 {
                     b.Navigation("users_that_i_train");
-                });
-
-            modelBuilder.Entity("User", b =>
-                {
-                    b.Navigation("dailyGoals");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,3 +1,5 @@
+@model Man
+
 @{
     ViewData["Title"] = "Register";
 }
@@ -144,15 +146,22 @@
 <div class="register-box">
 
     <h2>Kayıt Ol</h2>
+    <h2>Giriş Yap</h2>
+    @if (TempData["err"] != null)
+    {
+        <div class="text-danger">
+            @TempData["err"]
+        </div>
+    }
+    <form asp-action="RegisterResult" asp-controller="Home">
 
-    <form>
-
-        <input type="text" class="form-control mb-3" placeholder="Adınız" />
-        <input type="text" class="form-control mb-3" placeholder="Soyadınız" />
-        <input type="tel" class="form-control mb-3" placeholder="Telefon Numarısı" />
-        <input type="email" class="form-control mb-3" placeholder="Email Adresi" />
-        <input type="password" class="form-control mb-3" placeholder="Şifre" />
-        <input type="password" class="form-control mb-3" placeholder="Şifre Tekrar" />
+        <input asp-for= "name" type="text" class="form-control mb-3" placeholder="Adınız" />
+        <input asp-for="userName" type="text" class="form-control mb-3" placeholder="UserName" />
+        <input asp-for ="number" type="tel" class="form-control mb-3" placeholder="Telefon Numarısı" />
+        <input asp-for="email" type="email" class="form-control mb-3" placeholder="Email Adresi" />
+        <input asp-for="age" type="number" class="form-control mb-3" placeholder="Your Age" />
+        <input asp-for="password" type="password" class="form-control mb-3" placeholder="Şifre" />
+        <input asp-for="compare_password" type="password" class="form-control mb-3" placeholder="Şifre Tekrar" />
 
         <button type="submit" class="register-btn">Kayıt Ol</button>
 

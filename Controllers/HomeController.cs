@@ -1,22 +1,18 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using fitnessCenter.Models;
-<<<<<<< Updated upstream
 using Microsoft.Extensions.Primitives;
-=======
+
 using fitnessCenter.Services;
->>>>>>> Stashed changes
 
 namespace fitnessCenter.Controllers;
 
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
-<<<<<<< Updated upstream
     private FitnessContext f_db = new FitnessContext();
-=======
+
     private readonly EmailSender _emailSender;
->>>>>>> Stashed changes
 
     public HomeController(ILogger<HomeController> logger, EmailSender emailSender)
     {
@@ -34,7 +30,6 @@ public class HomeController : Controller
         return View();
     }
 
-<<<<<<< Updated upstream
     [HttpPost]
     public IActionResult LoginResult(Man m) 
     {
@@ -86,22 +81,17 @@ public class HomeController : Controller
         TempData["err"] = "please fill all sections";
         return RedirectToAction("Login");
     }
-
-=======
->>>>>>> Stashed changes
     public IActionResult Register()
     {
         return View();
     }
 
-<<<<<<< Updated upstream
     [HttpPost]
     public IActionResult RegisterResult(Man m)
     {
         ModelState.Remove("passwordHash");
         if (ModelState.IsValid) 
         {
-            // if every thing is okay
             m.passwordHash = PasswordHasher.HashPassword(m.password);
             m.whoIam = Roles.user;
             f_db.Add(m);
@@ -111,8 +101,6 @@ public class HomeController : Controller
         TempData["err"] = "please fill all sections right!!";
         return RedirectToAction("Register");
     }
-=======
->>>>>>> Stashed changes
     public IActionResult Info()
     {
         return View();
@@ -135,14 +123,13 @@ public class HomeController : Controller
     {
         if (string.IsNullOrEmpty(email))
         {
-            ViewBag.Message = "Lütfen email adresinizi giriniz.";
+            ViewBag.Success = false;
+            ViewBag.Message = "Please enter your email address.";
             return View();
         }
 
-        //(Token)
         string token = Guid.NewGuid().ToString();
 
-        //build the link of reset password
         string resetLink = Url.Action(
             "ResetPassword",
             "Home",
@@ -150,17 +137,23 @@ public class HomeController : Controller
             Request.Scheme
         );
 
-        //the email massege
-        string subject = "Şifre Sıfırlama Bağlantısı";
+        string subject = "Password Reset Link";
         string body =
-            $"<h3>Şifre Sıfırlama</h3>" +
-            $"<p>Şifrenizi sıfırlamak için aşağıdaki bağlantıya tıklayın:</p>" +
-            $"<a href='{resetLink}'>Şifreyi Sıfırla</a>";
+            $"<h3>Password Reset</h3>" +
+            $"<p>You can reset your password by clicking the link below:</p>" +
+            $"<a href='{resetLink}'>Reset Password</a>";
 
-        //send the mail
         await _emailSender.SendEmailAsync(email, subject, body);
 
-        ViewBag.Message = "Sıfırlama bağlantısı email adresinize gönderildi!";
+        ViewBag.Success = true;
+        ViewBag.Message = @"
+        <strong>The reset link has been sent to your email!</strong><br>
+        Please check your inbox<br>
+        <a href='https://mail.google.com' target='_blank' style='color:#4da3ff;font-weight:bold;'>
+            Open Gmail
+        </a>
+    ";
+
         return View();
     }
 
@@ -178,12 +171,15 @@ public class HomeController : Controller
 
     //Reset Password (POST)
     [HttpPost]
-    public IActionResult ResetPassword(string token, string newPassword)
+    public IActionResult ResetPassword(string newPassword, string confirmPassword, string token)
     {
-        if (string.IsNullOrEmpty(token))
-            return BadRequest("Token bulunamadı.");
+        if (newPassword != confirmPassword)
+        {
+            ViewBag.Message = "Şifreler eşleşmiyor!";
+            return View();
+        }
 
-        ViewBag.Message = "Şifreniz başarıyla güncellendi!";
+        ViewBag.Success = true;
         return View();
     }
 

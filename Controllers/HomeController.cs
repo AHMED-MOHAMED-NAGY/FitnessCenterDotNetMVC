@@ -118,16 +118,8 @@ public class HomeController : Controller
     }
 
     //Forgot Password (POST)
-    [HttpPost]
-    public async Task<IActionResult> ForgotPassword(string email)
+    private async Task ForgotPassword(string email)
     {
-        if (string.IsNullOrEmpty(email))
-        {
-            ViewBag.Success = false;
-            ViewBag.Message = "Please enter your email address.";
-            return View();
-        }
-
         string token = Guid.NewGuid().ToString();
 
         string resetLink = Url.Action(
@@ -144,16 +136,35 @@ public class HomeController : Controller
             $"<a href='{resetLink}'>Reset Password</a>";
 
         await _emailSender.SendEmailAsync(email, subject, body);
-
-        ViewBag.Success = true;
-        ViewBag.Message = @"
-        <strong>The reset link has been sent to your email!</strong><br>
-        Please check your inbox<br>
-        <a href='https://mail.google.com' target='_blank' style='color:#4da3ff;font-weight:bold;'>
-            Open Gmail
-        </a>
-    ";
-
+    }
+    [HttpPost]
+    public IActionResult ForgotPasswordResult(Man m)
+    {
+        ModelState.Remove("passwordHash");
+        ModelState.Remove("name");
+        ModelState.Remove("age");
+        ModelState.Remove("userName");
+        ModelState.Remove("number");
+        ModelState.Remove("compare_password");
+        ModelState.Remove("password");
+        
+        if (ModelState.IsValid)
+        {
+            // it's work 
+            var man = f_db.men.FirstOrDefault(x=>x.email == m.email);
+            if (man == null)
+            {
+                TempData["err"] = "User Not Fount!!";
+                return RedirectToAction("ForgotPassword");
+            }
+            ForgotPassword(man.email);
+            return RedirectToAction("SendingEmail");
+        }
+        TempData["err"] = "please enter an available email!!";
+        return RedirectToAction("ForgotPassword");
+    }
+    public IActionResult SendingEmail()
+    {
         return View();
     }
 

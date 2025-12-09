@@ -1,0 +1,141 @@
+﻿@{
+    ViewData["Title"] = "Sending Email";
+}
+
+<style>
+
+    body
+    {
+        background: url('/images/login.jpg') no-repeat center center fixed;
+        background-size: cover;
+        font-family: Arial, sans-serif;
+    }
+
+    .forgot-box
+    {
+        width: 450px;
+        padding: 35px;
+        margin: 120px auto;
+        background: rgba(255, 255, 255, 0.07);
+        border-radius: 20px;
+        backdrop-filter: blur(12px);
+        box-shadow: 0 0 25px rgba(255,255,255,0.25);
+        color: white;
+    }
+
+    h2
+    {
+        text-align: center;
+        margin-bottom: 25px;
+        font-size: 2rem;
+        font-weight: bold;
+        color: #fff;
+        text-shadow: 0 0 15px rgba(255,255,255,0.9);
+    }
+
+    .input-group
+    {
+        position: relative;
+        margin-bottom: 20px;
+    }
+
+    .input-group i
+    {
+        position: absolute;
+        right: 15px;
+        top: 14px;
+        color: rgba(255,255,255,0.7);
+        font-size: 1.1rem;
+    }
+
+    .form-control
+    {
+        width: 100%;
+        padding: 12px 45px 12px 15px;
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.4);
+        border-radius: 12px;
+        color: white;
+        height: 100px;
+    }
+
+    .form-control::placeholder
+    {
+        color: rgba(255,255,255,0.7);
+    }
+
+    .form-control:focus
+    {
+        background: rgba(255,255,255,0.15);
+        border-color: #4da3ff;
+        box-shadow: 0 0 15px rgba(77,163,255,0.8);
+    }
+
+    .forgot-btn
+    {
+        width: 100%;
+        padding: 12px;
+        background: white;
+        color: black;
+        font-weight: bold;
+        border-radius: 20px;
+        border: none;
+        cursor: pointer;
+        transition: 0.3s;
+        font-size: 1.1rem;
+        margin-bottom: 15px;
+    }
+
+    .forgot-btn:hover
+    {
+        transform: scale(1.05);
+        box-shadow: 0 0 20px rgba(255,255,255,0.8);
+    }
+
+    .back-login
+    {
+        text-align: center;
+        margin-top: 10px;
+    }
+
+    .back-login a ,a
+    {
+        color: #4da3ff;
+        font-weight: bold;
+        text-decoration: none;
+    }
+
+    .back-login a:hover ,a:hover
+    {
+        text-decoration: underline;
+    }
+
+    footer, footer span, footer p, footer div
+    {
+        color: #ffffff !important;
+        opacity: 1 !important;
+        font-weight: 700 !important;
+        text-shadow: 0 0 10px rgba(0,0,0,1) !important;
+    }
+
+    footer a, a
+    {
+        color: #00a2ff !important;
+        font-weight: 700 !important;
+        text-shadow: 0 0 10px rgba(0,0,0,1) !important;
+    }
+
+</style>
+
+<div class="forgot-box">
+
+    <h2>Check your Gmail</h2>
+
+    <h4 class="">We are snding verification Email to you please <a href="https://mail.google.com/"> CHECK YOUR EMAIL</a></h4>
+
+    <div class="back-login">
+        <a asp-controller="Home" asp-action="Login">Back to Login</a>
+    </div>
+
+
+</div>

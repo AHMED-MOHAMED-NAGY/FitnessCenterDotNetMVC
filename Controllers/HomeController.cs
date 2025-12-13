@@ -4,6 +4,7 @@ using fitnessCenter.Models;
 using Microsoft.Extensions.Primitives;
 
 using fitnessCenter.Services;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace fitnessCenter.Controllers;
 
@@ -176,22 +177,37 @@ public class HomeController : Controller
             return BadRequest("Geçersiz token.");
         }
 
-        ViewBag.Token = token;
+        TempData["token"]= token;
         return View();
     }
 
     //Reset Password (POST)
     [HttpPost]
-    public IActionResult ResetPassword(string newPassword, string confirmPassword, string token)
+    public IActionResult ResetPasswordResult(ResetPassword rpw)
     {
-        if (newPassword != confirmPassword)
+        var id = GetIdByToken(rpw.Key);
+        if (id == 0)
         {
-            ViewBag.Message = "Şifreler eşleşmiyor!";
-            return View();
+            TempData["err"] = "Logouted !!";
+            return View("ResetPassword");
         }
-
-        ViewBag.Success = true;
-        return View();
+        Man m = f_db.men.FirstOrDefault(x=>x.manId == id);
+        if (m == null)
+        {
+            TempData["err"] = "User Not Fount!!";
+            return View("ResetPassword");
+        }
+        if (ModelState.IsValid)
+        {
+            // success
+            m.passwordHash = PasswordHasher.HashPassword(rpw.password);
+            f_db.SaveChanges();
+            ///////////////////////////////////////
+            /// print (password changed successful)
+            return RedirectToAction("Login");
+        }
+        TempData["err"] = "The password must be same!!";
+        return View("ResetPassword");
     }
 
     // Default Error Handler
@@ -199,5 +215,11 @@ public class HomeController : Controller
     public IActionResult Error()
     {
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+    }
+
+    public int GetIdByToken(string token)
+    {
+        ////////////////// edit this 
+        return 0; // Or throw exception
     }
 }

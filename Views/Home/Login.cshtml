@@ -182,6 +182,12 @@
         font-weight: bold !important;
     }
 
+    .done
+    {
+        color: green;
+        text-align: center;
+        font-weight: bold;
+    }
 </style>
 
 <div class="login-box">
@@ -193,7 +199,14 @@
             @TempData["err"]
         </div>
     }
-    <form asp-controller="Home" asp-action="LoginResult">
+    @if (TempData["Success"] != null)
+    {
+        <p class="done">
+            @TempData["Success"]
+        </p>
+    }
+
+    <form asp-controller="Home" asp-action="LoginResult" method="post">
 
         <div class="input-group">
             <input asp-for="userName" type="text" class="form-control" placeholder="Kullanıcı Adı" />
@@ -203,13 +216,11 @@
         <div class="input-group">
             <input asp-for = "password" type="password" class="form-control" placeholder="Şifre" />
             <i class="fa-solid fa-lock"></i>
-            <span asp-validation-for="name" class="alert-danger"></span>
         </div>
 
         <div class="options">
             <label><input type="checkbox" /> Beni Hatırla</label>
             <a asp-controller="Home" asp-action="ForgotPassword">Şifrenizi mi unuttunuz?</a>
-            <span asp-validation-for="password" class="alert-danger"></span>
         </div>
 
         <button type="submit" class="login-btn">Giriş Yap</button>

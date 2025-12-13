@@ -1,10 +1,7 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using fitnessCenter.Models;
-using Microsoft.Extensions.Primitives;
-
 using fitnessCenter.Services;
-using System.IdentityModel.Tokens.Jwt;
 
 namespace fitnessCenter.Controllers;
 
@@ -12,7 +9,6 @@ public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
     private FitnessContext f_db = new FitnessContext();
-
     private readonly EmailSender _emailSender;
 
     public HomeController(ILogger<HomeController> logger, EmailSender emailSender)
@@ -32,40 +28,37 @@ public class HomeController : Controller
     }
 
     [HttpPost]
-    public IActionResult LoginResult(Man m) 
+    public IActionResult LoginResult(Man m)
     {
+        // remove unused validations
         ModelState.Remove("passwordHash");
         ModelState.Remove("name");
         ModelState.Remove("age");
         ModelState.Remove("email");
         ModelState.Remove("number");
         ModelState.Remove("compare_password");
-        if (ModelState.IsValid) 
+
+        if (ModelState.IsValid)
         {
             // if form right
             var man = f_db.men.FirstOrDefault(x => x.userName == m.userName);
+
             if (man != null)
             {
                 string hashed = PasswordHasher.HashPassword(m.password);
                 string verify = man.passwordHash;
+
                 //bool rs = PasswordHasher.VerifyPassword(hashed, verify);
                 if (hashed == verify)
                 {
                     // verify is done you can login
-                    // if user redirect to user control 
-                    // if cotch redirect to cotch control
+                    // if user redirect to admin / coach / user control
                     if (man.whoIam == Roles.admin)
-                    {
                         return RedirectToAction("Index", "Admin");
-                    }
                     else if (man.whoIam == Roles.cotch)
-                    {
                         return RedirectToAction("Index", "Cotch");
-                    }
-                    else 
-                    {
+                    else
                         return RedirectToAction("Index", "User");
-                    }
                 }
                 else
                 {
@@ -73,15 +66,17 @@ public class HomeController : Controller
                     return RedirectToAction("Login");
                 }
             }
-            else 
+            else
             {
-                TempData["err"] = "User not fount!!";
+                TempData["err"] = "User not found!!";
                 return RedirectToAction("Login");
             }
         }
-        TempData["err"] = "please fill all sections";
+
+        TempData["err"] = "Please fill all sections!";
         return RedirectToAction("Login");
     }
+
     public IActionResult Register()
     {
         return View();
@@ -91,53 +86,51 @@ public class HomeController : Controller
     public IActionResult RegisterResult(Man m)
     {
         ModelState.Remove("passwordHash");
-        if (ModelState.IsValid) 
+
+        if (ModelState.IsValid)
         {
+            // if everything is okay
             m.passwordHash = PasswordHasher.HashPassword(m.password);
             m.whoIam = Roles.user;
-            f_db.Add(m);
+
+            f_db.men.Add(m);
             f_db.SaveChanges();
-            return RedirectToAction("Index", "User");
+
+            return RedirectToAction("Login");
         }
-        TempData["err"] = "please fill all sections right!!";
+
+        TempData["err"] = "Please fill all sections correctly!!";
         return RedirectToAction("Register");
     }
-    public IActionResult Info()
-    {
-        return View();
-    }
 
-    public IActionResult Privacy()
-    {
-        return View();
-    }
-
-    //Forgot Password (GET)
+    // Forgot Password (GET)
     public IActionResult ForgotPassword()
     {
         return View();
     }
 
-    //Forgot Password (POST)
-    private async Task ForgotPassword(string email)
+    // send email function
+    private async void SendResetPasswordEmail(string email)
     {
-        string token = Guid.NewGuid().ToString();
-
+        // build reset password link
         string resetLink = Url.Action(
             "ResetPassword",
             "Home",
-            new { token = token },
+            new { email = email },
             Request.Scheme
         );
 
         string subject = "Password Reset Link";
         string body =
-            $"<h3>Password Reset</h3>" +
-            $"<p>You can reset your password by clicking the link below:</p>" +
+            "<h3>Password Reset</h3>" +
+            "<p>You can reset your password by clicking the link below:</p>" +
             $"<a href='{resetLink}'>Reset Password</a>";
 
+        // send email
         await _emailSender.SendEmailAsync(email, subject, body);
     }
+
+    // Forgot Password (POST)
     [HttpPost]
     public IActionResult ForgotPasswordResult(Man m)
     {
@@ -148,78 +141,77 @@ public class HomeController : Controller
         ModelState.Remove("number");
         ModelState.Remove("compare_password");
         ModelState.Remove("password");
-        
+
         if (ModelState.IsValid)
         {
-            // it's work 
-            var man = f_db.men.FirstOrDefault(x=>x.email == m.email);
+            // check if email exists
+            var man = f_db.men.FirstOrDefault(x => x.email == m.email);
+
             if (man == null)
             {
-                TempData["err"] = "User Not Fount!!";
+                TempData["err"] = "User Not Found!!";
                 return RedirectToAction("ForgotPassword");
             }
-            ForgotPassword(man.email);
+
+            // send reset email
+            SendResetPasswordEmail(man.email);
             return RedirectToAction("SendingEmail");
         }
-        TempData["err"] = "please enter an available email!!";
+
+        TempData["err"] = "Please enter a valid email!";
         return RedirectToAction("ForgotPassword");
     }
+
     public IActionResult SendingEmail()
     {
         return View();
     }
 
-    //Reset Password (GET)
-    public IActionResult ResetPassword(string token)
+    // Reset Password (GET)
+    public IActionResult ResetPassword(string email)
     {
-        if (string.IsNullOrEmpty(token))
-        {
-            return BadRequest("Geçersiz token.");
-        }
+        if (string.IsNullOrEmpty(email))
+            return BadRequest("Invalid request");
 
-        TempData["token"]= token;
+        ViewBag.Email = email;
         return View();
     }
 
-    //Reset Password (POST)
+    // Reset Password (POST)
     [HttpPost]
-    public IActionResult ResetPasswordResult(ResetPassword rpw)
+    public IActionResult ResetPassword(string email, string newPassword, string confirmPassword)
     {
-        var id = GetIdByToken(rpw.Key);
-        if (id == 0)
+        // check passwords match
+        if (newPassword != confirmPassword)
         {
-            TempData["err"] = "Logouted !!";
-            return View("ResetPassword");
+            ViewBag.Message = "Passwords do not match!";
+            ViewBag.Email = email;
+            return View();
         }
-        Man m = f_db.men.FirstOrDefault(x=>x.manId == id);
-        if (m == null)
+
+        // find user by email
+        var user = f_db.men.FirstOrDefault(x => x.email == email);
+
+        if (user == null)
         {
-            TempData["err"] = "User Not Fount!!";
-            return View("ResetPassword");
+            ViewBag.Message = "User not found!";
+            return View();
         }
-        if (ModelState.IsValid)
-        {
-            // success
-            m.passwordHash = PasswordHasher.HashPassword(rpw.password);
-            f_db.SaveChanges();
-            ///////////////////////////////////////
-            /// print (password changed successful)
-            return RedirectToAction("Login");
-        }
-        TempData["err"] = "The password must be same!!";
-        return View("ResetPassword");
+
+        // update password
+        user.passwordHash = PasswordHasher.HashPassword(newPassword);
+        f_db.SaveChanges();
+
+        TempData["Success"] = "Password changed successfully. Please login.";
+        return RedirectToAction("Login");
     }
 
-    // Default Error Handler
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-    }
-
-    public int GetIdByToken(string token)
-    {
-        ////////////////// edit this 
-        return 0; // Or throw exception
+        return View(new ErrorViewModel
+        {
+            RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+        });
     }
 }

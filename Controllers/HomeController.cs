@@ -42,7 +42,11 @@ public class HomeController : Controller
         {
             // if form right
             var man = f_db.men.FirstOrDefault(x => x.userName == m.userName);
-
+            if (man == null) // login with email
+            {
+                man = f_db.men.FirstOrDefault(x => x.email == m.userName);
+            }
+            
             if (man != null)
             {
                 string hashed = PasswordHasher.HashPassword(m.password);

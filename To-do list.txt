@@ -7,6 +7,6 @@ this is a to do list to make creating tssks easy to understand
 3. create cotch controllers
 4. fill all action results 
 5. link DB ======================================> DONE
-6. authorization and Authentication
+6. authorization and Authentication =============> DONE
 7. hashing the password =========================> DONE
-8. forget password page 
+8. forget password page =========================> DONE

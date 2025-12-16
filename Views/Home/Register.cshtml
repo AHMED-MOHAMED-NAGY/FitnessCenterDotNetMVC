@@ -154,14 +154,20 @@
         </div>
     }
     <form asp-action="RegisterResult" asp-controller="Home">
-
         <input asp-for= "name" type="text" class="form-control mb-3" placeholder="Adınız" />
+        <span asp-validation-for="name" class="text-danger"></span>
         <input asp-for="userName" type="text" class="form-control mb-3" placeholder="UserName" />
+        <span asp-validation-for="userName" class="text-danger"></span>
         <input asp-for ="number" type="tel" class="form-control mb-3" placeholder="Telefon Numarısı" />
+        <span asp-validation-for="number" class="text-danger"></span>
         <input asp-for="email" type="email" class="form-control mb-3" placeholder="Email Adresi" />
+        <span asp-validation-for="email" class="text-danger"></span>
         <input asp-for="age" type="number" class="form-control mb-3" placeholder="Your Age" />
+        <span asp-validation-for="age" class="text-danger"></span>
         <input asp-for="password" type="password" class="form-control mb-3" placeholder="Şifre" />
+        <span asp-validation-for="password" class="text-danger"></span>
         <input asp-for="compare_password" type="password" class="form-control mb-3" placeholder="Şifre Tekrar" />
+        <span asp-validation-for="compare_password" class="text-danger"></span>
 
         <button type="submit" class="register-btn">Kayıt Ol</button>
 

@@ -2,6 +2,7 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using fitnessCenter.Models;
 using fitnessCenter.Services;
+using fitnessCenter.Attributes;
 
 namespace fitnessCenter.Controllers;
 
@@ -21,7 +22,7 @@ public class HomeController : Controller
     {
         return View();
     }
-
+    [Guest]
     public IActionResult Login()
     {
         return View();
@@ -52,9 +53,12 @@ public class HomeController : Controller
                 string hashed = PasswordHasher.HashPassword(m.password);
                 string verify = man.passwordHash;
 
-                //bool rs = PasswordHasher.VerifyPassword(hashed, verify);
                 if (hashed == verify)
                 {
+                    // save data at session
+                    HttpContext.Session.SetInt32("UserId", man.manId);
+                    HttpContext.Session.SetString("UserName", man.userName);
+                    HttpContext.Session.SetString("Role", man.whoIam.ToString());
                     // verify is done you can login
                     // if user redirect to admin / coach / user control
                     if (man.whoIam == Roles.admin)
@@ -97,7 +101,20 @@ public class HomeController : Controller
             m.passwordHash = PasswordHasher.HashPassword(m.password);
             m.whoIam = Roles.user;
 
-            f_db.men.Add(m);
+            User u = new User() 
+            {
+                name = m.name,
+                userName = m.userName,
+                email = m.email,
+                passwordHash = m.passwordHash,
+                boy = m.boy,
+                wight = m.wight,
+                age = m.age,
+                number = m.number,
+                whoIam = Roles.user,
+                subscribeStatus = "New"
+            };
+            f_db.users.Add(u);
             f_db.SaveChanges();
 
             return RedirectToAction("Login");
@@ -208,6 +225,24 @@ public class HomeController : Controller
 
         TempData["Success"] = "Password changed successfully. Please login.";
         return RedirectToAction("Login");
+    }
+    [Role] // Optional: Only logged-in users need to logout
+    public IActionResult Logout()
+    {
+        // 1. Clear the specific keys
+        HttpContext.Session.Remove("UserId");
+        HttpContext.Session.Remove("Role");
+        
+        // OR: Wipe the entire session clean (Safer)
+        HttpContext.Session.Clear();
+
+        // 2. Redirect to Login page (or Home)
+        return RedirectToAction("Login", "Home");
+    }
+
+    public IActionResult Info()
+    {
+        return View();
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

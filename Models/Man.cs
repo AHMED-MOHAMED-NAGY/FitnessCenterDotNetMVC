@@ -9,29 +9,29 @@ public class Man
     public int manId { get; set; }
 
     [Display(Name = "full name")]
-    public string? name { get; set; }
+    public string name { get; set; }
 
     [Required]
     [Display(Name = "user name")]
-    public string? userName { get; set; }
+    public string userName { get; set; }
 
     [EmailAddress]
     [Required]
     [Display(Name ="Email address")]
-    public string? email { get; set; }
+    public string email { get; set; }
 
     [Required]
     [NotMapped]
     [Display(Name = "Password")]
-    public string? password { get; set; }
+    public string password { get; set; }
 
     [Required]
     [NotMapped]
     [Display(Name = "Compare Password")]
     [Compare("password")]
-    public string? compare_password { get; set; }
+    public string compare_password { get; set; }
 
-    public string? passwordHash { get; set; }
+    public string passwordHash { get; set; }
     public int boy { get; set; }
     public int wight { get; set; }
 

@@ -7,6 +7,16 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddTransient<EmailSender>();
 
+// Add Session Service
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // Session dies after 30 mins of inactivity
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+builder.Services.AddHttpContextAccessor();
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -18,9 +28,11 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+app.UseSession();
 
 app.MapStaticAssets();
 

@@ -211,11 +211,13 @@
         <div class="input-group">
             <input asp-for="userName" type="text" class="form-control" placeholder="Kullanıcı Adı" />
             <i class="fa-solid fa-user"></i>
+            <span asp-validation-for="userName" class="text-danger"></span>
         </div>
 
         <div class="input-group">
             <input asp-for = "password" type="password" class="form-control" placeholder="Şifre" />
             <i class="fa-solid fa-lock"></i>
+            <span asp-validation-for="password" class="text-danger"></span>
         </div>
 
         <div class="options">

@@ -1,0 +1,57 @@
+@model fitnessCenter.Models.ShowPlanViewModel
+@{
+    ViewData["Title"] = "Your Transformation Plan";
+}
+
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold text-success">Your @Model.Duration-Month @Model.PlanType Plan</h1>
+        <p class="lead text-muted">AI-Generated personalized roadmap to your goal.</p>
+    </div>
+
+    <!-- Transformation Visualization -->
+    <div class="row mb-5 justify-content-center">
+        <div class="col-md-5 text-center">
+            <h4 class="mb-3">Start</h4>
+            <div class="card shadow-sm">
+                <img src="@Model.BeforeImageUrl" class="card-img-top rounded" alt="Current Self" style="max-height: 400px; object-fit: cover;">
+            </div>
+        </div>
+        <div class="col-md-1 d-flex align-items-center justify-content-center">
+            <i class="bi bi-arrow-right fs-1 text-muted d-none d-md-block"></i>
+            <i class="bi bi-arrow-down fs-1 text-muted d-block d-md-none my-3"></i>
+        </div>
+        <div class="col-md-5 text-center">
+            <h4 class="mb-3 text-primary">Goal (Projected)</h4>
+            <div class="card shadow-lg border-primary">
+                <img src="@Model.AfterImageUrl" class="card-img-top rounded" alt="Future Self" style="max-height: 400px; object-fit: cover;">
+            </div>
+        </div>
+    </div>
+
+    <!-- Detailed Plan -->
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow border-0">
+                <div class="card-header bg-dark text-white p-3">
+                    <h3 class="h4 mb-0"><i class="bi bi-file-text me-2"></i>Detailed Strategy</h3>
+                </div>
+                <div class="card-body p-4 bg-light">
+                    <div class="markdown-content">
+                        <!-- We use a simple whitespace pre-wrap for now, or a markdown library if available. 
+                             Since no library is guaranteed, we'll display as pre-formatted text styled pleasantly. -->
+                        <pre style="white-space: pre-wrap; font-family: inherit; font-size: 1rem;">@Model.PlanText</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="row mt-5">
+        <div class="col-12 text-center">
+            <a asp-action="Index" asp-controller="User" class="btn btn-outline-primary btn-lg rounded-pill px-5 me-2">Back to Dashboard</a>
+            <a asp-action="PlanSelection" asp-route-type="@Model.PlanType" class="btn btn-primary btn-lg rounded-pill px-5">Regenerate</a>
+        </div>
+    </div>
+</div>

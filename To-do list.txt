@@ -12,6 +12,6 @@ this is a to do list to make creating tssks easy to understand
 8. forget password page =======================================> DONE
 9. check when make a new register if username is in DB or not
 10. AI API make it take and generate photos
-11. username and email must be unique when you make register
+11. username and email must be unique when you make register =======================================> DONE
 12. edit login and logout btn at layout
 13. err at details cotch at admin page

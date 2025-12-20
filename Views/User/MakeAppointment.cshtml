@@ -1,0 +1,68 @@
+@{
+    ViewData["Title"] = "Make Advertisement";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-header bg-white text-center py-4 border-bottom-0">
+                    <h2 class="fw-bold mb-0">Apply For Appointment</h2>
+                </div>
+                <div class="card-body p-5">
+                    <form>
+                        <!-- Exercise Selection -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold ps-2">Exercise</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0 rounded-start-pill"><i class="bi bi-activity"></i></span>
+                                <select class="form-select form-select-lg border-start-0 rounded-end-pill shadow-none" aria-label="Select Exercise">
+                                    <option selected disabled>Select Exercise...</option>
+                                    <option value="1">Cardio</option>
+                                    <option value="2">Weight Lifting</option>
+                                    <option value="3">Yoga</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Cotch Selection -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold ps-2">Cotch</label>
+                             <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0 rounded-start-pill"><i class="bi bi-person-badge"></i></span>
+                                <select class="form-select form-select-lg border-start-0 rounded-end-pill shadow-none" aria-label="Select Cotch">
+                                    <option selected disabled>Select Cotch...</option>
+                                    <option value="1">Coach Bolt</option>
+                                    <option value="2">Coach Sarah</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Available Times Box -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold ps-2">Available Times</label>
+                            <div class="border rounded-4 p-3 bg-light" style="min-height: 100px;">
+                                <!-- This would be dynamically populated via AJAX based on Coach selection -->
+                                <div class="list-group list-group-flush bg-transparent">
+                                    <button type="button" class="list-group-item list-group-item-action bg-transparent border-0 rounded ps-2"><i class="bi bi-clock me-2"></i>10:00 AM - 11:00 AM</button>
+                                    <button type="button" class="list-group-item list-group-item-action bg-transparent border-0 rounded ps-2"><i class="bi bi-clock me-2"></i>02:00 PM - 03:00 PM</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="text-center mt-5">
+                            <button type="submit" class="btn btn-danger btn-lg rounded-pill px-5 py-3 fw-bold w-100 shadow-sm">
+                                Ask Admin To Apply
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="text-center mt-4">
+                <a asp-action="Index" class="text-decoration-none text-muted"><i class="bi bi-arrow-left me-1"></i> Back to Dashboard</a>
+            </div>
+        </div>
+    </div>
+</div>

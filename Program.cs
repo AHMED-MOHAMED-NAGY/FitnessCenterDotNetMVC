@@ -6,6 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddTransient<EmailSender>();
+builder.Services.AddTransient<AIService>();
 
 // Add Session Service
 builder.Services.AddSession(options =>

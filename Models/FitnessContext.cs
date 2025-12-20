@@ -15,7 +15,7 @@ namespace fitnessCenter.Models
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseNpgsql("Host=localhost; DataBase=fitnessCenter; Username=postgres; Password=1234");
+            optionsBuilder.UseNpgsql("Host=localhost; DataBase=fitnessCenter; Username=postgres; Password=kaka2066");
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

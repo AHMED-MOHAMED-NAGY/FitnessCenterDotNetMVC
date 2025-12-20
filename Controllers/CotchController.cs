@@ -6,9 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using fitnessCenter.Models;
+using fitnessCenter.Attributes;
 
 namespace fitnessCenter.Controllers
 {
+    [Role("cotch")]
     public class CotchController : Controller
     {
         private FitnessContext f_db = new FitnessContext();

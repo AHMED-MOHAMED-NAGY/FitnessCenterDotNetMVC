@@ -84,7 +84,7 @@ public class HomeController : Controller
         TempData["err"] = "Please fill all sections!";
         return RedirectToAction("Login");
     }
-
+    [Guest]
     public IActionResult Register()
     {
         return View();

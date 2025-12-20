@@ -1,0 +1,76 @@
+﻿@model User
+
+@{
+    ViewData["Title"] = "Details User";
+}
+
+<h1>User Details</h1>
+
+<div>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.subscribeStatus)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.subscribeStatus)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.name)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.name)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.userName)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.userName)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.email)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.email)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.boy)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.boy)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.wight)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.wight)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.age)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.age)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.number)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.number)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.whoIam)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.whoIam)
+        </dd>
+    </dl>
+</div>
+<div>
+    @if (Model.whoIam != Roles.admin){
+        <a asp-action="MakeUsrAdmin" asp-route-id="manId">Make Admin</a> <span> |</span>
+    }
+    @if( Model.whoIam != Roles.cotch){
+        <a asp-action="MakeUsrCotch" asp-route-id="manId">Make Cotch</a> <span> |</span>
+    }
+    <a asp-action="ListUsers">Back to List</a>
+</div>

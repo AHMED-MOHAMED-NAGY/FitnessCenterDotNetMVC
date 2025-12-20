@@ -1,0 +1,73 @@
+﻿@model IEnumerable<Admin>
+
+@{
+    ViewData["Title"] = "ListAdmins";
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.userName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.boy)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.wight)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.age)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.number)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.whoIam)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.userName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.email)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.boy)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.wight)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.age)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.number)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.whoIam)
+                </td>
+                <td>
+                    <a asp-action="MakeAdminCtch" asp-route-id="@item.manId">Make Cotch</a>
+                    <a asp-action="DetailsAdmin" asp-route-id="@item.manId">Details</a> |
+                    <a asp-action="DeleteAdmin" asp-route-id="@item.manId">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

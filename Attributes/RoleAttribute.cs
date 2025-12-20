@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace fitnessCenter.Attributes // <--- Check this namespace
+namespace fitnessCenter.Attributes
 {
     public class RoleAttribute : ActionFilterAttribute
     {
@@ -22,24 +22,30 @@ namespace fitnessCenter.Attributes // <--- Check this namespace
             var userId = session.GetInt32("UserId").ToString();
             var userRole = session.GetString("Role");
 
-            // 1. Check if user is logged in (Session exists)
+            // 1. LOGIN CHECK: If not logged in, go to Login
             if (string.IsNullOrEmpty(userId))
             {
-                // Redirect to Login if session is missing
                 context.Result = new RedirectToActionResult("Login", "Home", null);
                 return;
             }
 
-            // 2. Check if role matches (only if a role was passed)
+            // 2. ROLE CHECK
             if (!string.IsNullOrEmpty(_requiredRole))
             {
-                if (userRole != _requiredRole)
+                // SCENARIO A: The user has the exact role required (e.g. User tries to enter User page) -> ALLOW
+                bool matchExact = (userRole == _requiredRole);
+                
+                // SCENARIO B: The user is an Admin (Admin tries to enter User page) -> ALLOW
+                bool isAdmin = (userRole == "Admin");
+
+                // If NEITHER is true, block them.
+                if (!matchExact && !isAdmin)
                 {
-                    // Redirect to Access Denied or Home if role is wrong
-                    context.Result = new RedirectToActionResult("Index", "Home", null);
+                    // This blocks "User" from accessing [Role("Admin")]
+                    context.Result = new RedirectToActionResult("Index", userRole, null);
                 }
             }
-
+            
             base.OnActionExecuting(context);
         }
     }

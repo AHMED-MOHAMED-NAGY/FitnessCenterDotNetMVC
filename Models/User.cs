@@ -5,6 +5,8 @@ public class User : Man
 {
     public DailyGoal? dailyGoal { get; set; }
     public Cotch? cotch; // it will be available after read from db available cotchs has the same exercise
+
+    [Display(Name = "Subscribe Status")]
     public string? subscribeStatus { get; set; } // left 30 days - finish
     public int leftDaySubscribe;
     public Exercise? exercise { get; set; } // this will be some thing like dropdown list 

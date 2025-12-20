@@ -97,11 +97,26 @@ public class HomeController : Controller
 
         if (ModelState.IsValid)
         {
-            // if everything is okay
+            // check if username exists
+            var usernameExists = f_db.users.Any(x => x.userName == m.userName);
+            if (usernameExists)
+            {
+                TempData["err"] = "Username already exists!";
+                return RedirectToAction("Register");
+            }
+
+            // check if email exists
+            var emailExists = f_db.users.Any(x => x.email == m.email);
+            if (emailExists)
+            {
+                TempData["err"] = "Email already exists!";
+                return RedirectToAction("Register");
+            }
+
             m.passwordHash = PasswordHasher.HashPassword(m.password);
             m.whoIam = Roles.user;
 
-            User u = new User() 
+            User u = new User()
             {
                 name = m.name,
                 userName = m.userName,
@@ -114,6 +129,7 @@ public class HomeController : Controller
                 whoIam = Roles.user,
                 subscribeStatus = "New"
             };
+
             f_db.users.Add(u);
             f_db.SaveChanges();
 

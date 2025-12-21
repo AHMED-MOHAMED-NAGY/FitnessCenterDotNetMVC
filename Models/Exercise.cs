@@ -7,5 +7,5 @@ public class Exercise
     public string? exerciseType { get; set; }
     [Range(0, 100000)]
     public decimal Price { get; set; }
-    public List<Cotch>? availCotchs;
+    public List<Cotch>? availCotchs { get; set; }
 }

@@ -32,12 +32,36 @@ namespace fitnessCenter.Controllers
         public IActionResult DeleteUser(int id) 
         {
             bool isAdminAndLogin = HttpContext.Session.GetString("Role") == "admin" && HttpContext.Session.GetInt32("UserId") == id;
-            User? user = f_db.users.FirstOrDefault(x => x.manId == id);
+            User? user = f_db.users
+                .Include(u => u.dailyGoal)
+                .FirstOrDefault(x => x.manId == id);
+
             if (user != null)
             {
+                // 1. Delete Daily Goal
+                if (user.dailyGoal != null)
+                {
+                    f_db.dailyGoals.Remove(user.dailyGoal);
+                }
+
+                // 2. Delete Notifications
+                var notifications = f_db.notifications.Where(n => n.ManId == id).ToList();
+                if (notifications.Any())
+                {
+                    f_db.notifications.RemoveRange(notifications);
+                }
+
+                // 3. Delete Appointments
+                var appointments = f_db.appointments.Where(a => a.UserId == id).ToList();
+                if (appointments.Any())
+                {
+                    f_db.appointments.RemoveRange(appointments);
+                }
+
+                // 4. Delete the User
                 f_db.users.Remove(user);
                 f_db.SaveChanges();
-                TempData["msg"] = "User deleted successfully.";
+                TempData["msg"] = "User and all related data (Goal, Notifications, Appointments) deleted successfully.";
             }
             else
             {
@@ -66,6 +90,24 @@ namespace fitnessCenter.Controllers
                 a.age = user.age;
                 a.number = user.number;
                 a.whoIam = Roles.admin;
+
+                // Cancel appointments and restore availability
+                var appointments = f_db.appointments.Include(a => a.Cotch).Where(a => a.UserId == id).ToList();
+                if (appointments.Any())
+                {
+                    foreach (var appt in appointments)
+                    {
+                        if (appt.Cotch != null && !string.IsNullOrEmpty(appt.AppointmentDate))
+                        {
+                            if (appt.Cotch.available_times == null) appt.Cotch.available_times = new List<string>();
+                            if (!appt.Cotch.available_times.Contains(appt.AppointmentDate))
+                            {
+                                appt.Cotch.available_times.Add(appt.AppointmentDate);
+                            }
+                        }
+                    }
+                    f_db.appointments.RemoveRange(appointments);
+                }
 
                 f_db.Remove(user);
                 f_db.SaveChanges();
@@ -98,6 +140,24 @@ namespace fitnessCenter.Controllers
                 c.whoIam = Roles.cotch;
 
                 c.cotch_status = "new";
+
+                // Cancel appointments and restore availability
+                var appointments = f_db.appointments.Include(a => a.Cotch).Where(a => a.UserId == id).ToList();
+                if (appointments.Any())
+                {
+                    foreach (var appt in appointments)
+                    {
+                        if (appt.Cotch != null && !string.IsNullOrEmpty(appt.AppointmentDate))
+                        {
+                            if (appt.Cotch.available_times == null) appt.Cotch.available_times = new List<string>();
+                            if (!appt.Cotch.available_times.Contains(appt.AppointmentDate))
+                            {
+                                appt.Cotch.available_times.Add(appt.AppointmentDate);
+                            }
+                        }
+                    }
+                    f_db.appointments.RemoveRange(appointments);
+                }
 
                 f_db.Remove(user);
                 f_db.SaveChanges();
@@ -547,14 +607,24 @@ namespace fitnessCenter.Controllers
         }
 
         // Exercise Management
-        public IActionResult Exercises()
+        string apiUrl = "https://localhost:7127/api/Exercise";
+
+        public async Task<IActionResult> Exercises()
         {
-            var exercises = f_db.exercises.ToList();
+            List<Exercise> exercises = new List<Exercise>();
+            using (var client = new HttpClient())
+            {
+                var response = await client.GetAsync(apiUrl);
+                if (response.IsSuccessStatusCode)
+                {
+                    exercises = await response.Content.ReadFromJsonAsync<List<Exercise>>();
+                }
+            }
             return View(exercises);
         }
 
         [HttpPost]
-        public IActionResult AddExercise(string name, decimal price)
+        public async Task<IActionResult> AddExercise(string name, decimal price)
         {
             if (!string.IsNullOrWhiteSpace(name))
             {
@@ -563,9 +633,18 @@ namespace fitnessCenter.Controllers
                     exerciseType = name,
                     Price = price
                 };
-                f_db.exercises.Add(newEx);
-                f_db.SaveChanges();
-                TempData["msg"] = "Exercise added successfully.";
+                using (var client = new HttpClient())
+                {
+                    var response = await client.PostAsJsonAsync(apiUrl, newEx);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        TempData["msg"] = "Exercise added successfully.";
+                    }
+                    else
+                    {
+                        TempData["err"] = "Failed to add exercise.";
+                    }
+                }
             }
             else
             {
@@ -574,30 +653,25 @@ namespace fitnessCenter.Controllers
             return RedirectToAction("Exercises");
         }
 
-        public IActionResult DeleteExercise(int id)
+        public async Task<IActionResult> DeleteExercise(int id)
         {
-            var ex = f_db.exercises.Find(id);
-            if (ex != null)
+            using (var client = new HttpClient())
             {
-                // Unassign this exercise from any coaches who have it
-                var specializedCoaches = f_db.cotches.Where(c => c.ExerciseId == id).ToList();
-                if (specializedCoaches.Any())
+                var response = await client.DeleteAsync(apiUrl + "/" + id);
+                if (response.IsSuccessStatusCode)
                 {
-                    foreach (var coach in specializedCoaches)
-                    {
-                        coach.ExerciseId = null;
-                    }
+                    TempData["msg"] = "Exercise deleted successfully.";
                 }
-
-                f_db.exercises.Remove(ex);
-                f_db.SaveChanges();
-                TempData["msg"] = "Exercise deleted successfully.";
+                else
+                {
+                    TempData["err"] = "Failed to delete exercise. It might be in use.";
+                }
             }
             return RedirectToAction("Exercises");
         }
 
         [HttpPost]
-        public IActionResult EditExercise(int id, string newName, decimal newPrice)
+        public async Task<IActionResult> EditExercise(int id, string newName, decimal newPrice)
         {
             if (string.IsNullOrWhiteSpace(newName))
             {
@@ -605,18 +679,24 @@ namespace fitnessCenter.Controllers
                 return RedirectToAction("Exercises");
             }
 
-            var ex = f_db.exercises.Find(id);
-            if (ex != null)
+            Exercise ex = new Exercise
             {
-                ex.exerciseType = newName;
-                ex.Price = newPrice;
-                f_db.Update(ex);
-                f_db.SaveChanges();
-                TempData["msg"] = "Exercise updated successfully.";
-            }
-            else
+                exId = id,
+                exerciseType = newName,
+                Price = newPrice
+            };
+
+            using (var client = new HttpClient())
             {
-                TempData["err"] = "Exercise not found.";
+                var response = await client.PutAsJsonAsync(apiUrl + "/" + id, ex);
+                if (response.IsSuccessStatusCode)
+                {
+                     TempData["msg"] = "Exercise updated successfully.";
+                }
+                else
+                {
+                    TempData["err"] = "Failed to update exercise.";
+                }
             }
             return RedirectToAction("Exercises");
         }

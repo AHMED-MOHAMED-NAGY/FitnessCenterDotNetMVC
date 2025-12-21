@@ -134,6 +134,7 @@
              <!-- Notifications -->
             <a asp-controller="Home" asp-action="Notifications" class="notifications-badge" title="Notifications">
                 <i class="fa-solid fa-bell"></i>
+                @await Component.InvokeAsync("NotificationBadge")
             </a>
         </div>
     </div>

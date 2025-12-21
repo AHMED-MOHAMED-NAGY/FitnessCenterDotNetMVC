@@ -1,9 +1,12 @@
 using fitnessCenter.Services;
+using fitnessCenter.Models;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddDbContext<FitnessContext>();
 
 builder.Services.AddTransient<EmailSender>();
 builder.Services.AddTransient<AIService>();

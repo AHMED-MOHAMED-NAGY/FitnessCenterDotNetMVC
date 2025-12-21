@@ -51,33 +51,40 @@
                 <h2 class="mb-4">Choose Your AI Plan</h2>
                 <p class="mb-5 text-muted" style="color: rgba(255,255,255,0.7)!important">Select a goal to generate your personalized fitness plan.</p>
 
-                <form asp-action="GeneratePlan" method="post" enctype="multipart/form-data">
-                     <!-- Simplified selection for demonstration, assuming buttons pass value or strict flow -->
-                     <!-- Original file likely had buttons to submit or select. Let's provide a generic form or buttons. -->
-                     <!-- Since I don't see original content, I'll assume standard layout logic -->
+                <form asp-action="GeneratePlan" method="post" enctype="multipart/form-data" class="text-start">
                      
-                     <div class="d-grid gap-3">
-                        <button type="submit" name="planType" value="Weight Loss" class="plan-btn">
-                            <i class="fa-solid fa-weight-scale me-2"></i> Weight Loss
-                        </button>
-                        <button type="submit" name="planType" value="Muscle Gain" class="plan-btn">
-                            <i class="fa-solid fa-dumbbell me-2"></i> Muscle Gain
-                        </button>
-                        <button type="submit" name="planType" value="General Fitness" class="plan-btn">
-                            <i class="fa-solid fa-heart-pulse me-2"></i> General Fitness
-                        </button>
+                     <div class="mb-4">
+                        <label class="form-label fw-bold">1. Select Your Goal</label>
+                        <div class="d-flex gap-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="planType" id="bulking" value="Bulking" required>
+                                <label class="form-check-label" for="bulking">Bulking (Muscle Gain)</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="planType" id="cutting" value="Cutting" required>
+                                <label class="form-check-label" for="cutting">Cutting (Fat Loss)</label>
+                            </div>
+                        </div>
+                     </div>
+
+                     <div class="mb-4">
+                         <label class="form-label fw-bold">2. Plan Duration (Months)</label>
+                         <select name="duration" class="form-select" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2);">
+                             <option value="1" class="text-dark">1 Month</option>
+                             <option value="3" class="text-dark">3 Months</option>
+                             <option value="6" class="text-dark">6 Months</option>
+                         </select>
                      </div>
                      
-                     <!-- Assuming Duration and Image might be needed, adding hidden or visible inputs if required by controller -->
-                     <!-- Controller expects: GeneratePlan(string planType, int duration, IFormFile image) -->
-                     
-                     <div class="mt-4 text-start">
-                         <label class="form-label">Duration (Weeks)</label>
-                         <input type="number" name="duration" value="4" class="form-control mb-3" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2);">
-                         
-                         <label class="form-label">Current Physique (Optional)</label>
-                         <input type="file" name="image" class="form-control" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2);">
+                     <div class="mb-4">
+                         <label class="form-label fw-bold">3. Current Physique Photo</label>
+                         <input type="file" name="image" class="form-control" required style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2);">
+                         <div class="form-text text-white-50">Required for AI analysis and 'After' generation.</div>
                      </div>
+
+                     <button type="submit" class="btn btn-primary w-100 py-3 fw-bold rounded-pill text-uppercase" style="letter-spacing: 1px; box-shadow: 0 0 15px rgba(13,110,253,0.5);">
+                        <i class="fa-solid fa-wand-magic-sparkles me-2"></i> Generate AI Plan
+                     </button>
                 </form>
                 
                 <div class="mt-4">

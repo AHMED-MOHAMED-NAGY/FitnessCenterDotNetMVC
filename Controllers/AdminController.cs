@@ -216,6 +216,42 @@ namespace fitnessCenter.Controllers
             }
             return RedirectToAction("ListCotches");
         }
+
+        public IActionResult MakeCtchUser(int id)
+        {
+            Cotch? cotch = f_db.cotches.FirstOrDefault(x => x.manId == id);
+            if (cotch != null)
+            {
+                User u = new User();
+                u.manId = id;
+                u.name = cotch.name;
+                u.email = cotch.email;
+                u.userName = cotch.userName;
+                u.passwordHash = cotch.passwordHash;
+                u.boy = cotch.boy;
+                u.wight = cotch.wight;
+                u.age = cotch.age;
+                u.number = cotch.number;
+                u.whoIam = Roles.user;
+                
+                // Grant active subscription
+                u.subscribeStatus = "Active";
+                u.SubscriptionStartDate = DateTime.UtcNow;
+                u.SubscriptionEndDate = DateTime.UtcNow.AddDays(30);
+
+                f_db.Remove(cotch);
+                f_db.SaveChanges();
+                f_db.users.Add(u);
+                f_db.SaveChanges();
+
+                TempData["msg"] = "Coach converted to User successfully.";
+            }
+            else
+            {
+                TempData["err"] = "Coach not found.";
+            }
+            return RedirectToAction("ListCotches");
+        }
         // for admin
         public IActionResult ListAdmins()
         {
@@ -321,7 +357,8 @@ namespace fitnessCenter.Controllers
                 c.wight = admin.wight;
                 c.age = admin.age;
                 c.number = admin.number;
-                c.whoIam = Roles.admin;
+                c.number = admin.number;
+                c.whoIam = Roles.cotch;
 
                 f_db.Remove(admin);
                 f_db.SaveChanges();
@@ -375,7 +412,8 @@ namespace fitnessCenter.Controllers
         {
             var vm = new AdminApplicationsViewModel
             {
-                NewUsers = f_db.users.Where(u => u.subscribeStatus == "New").ToList(),
+                // Show both New and PendingPayment status
+                NewUsers = f_db.users.Where(u => u.subscribeStatus == "New" || u.subscribeStatus == "PendingPayment").ToList(),
                 AppointmentHistory = f_db.appointments
                     .Include(a => a.User)
                     .Include(a => a.Cotch)
@@ -393,9 +431,32 @@ namespace fitnessCenter.Controllers
             if (user != null)
             {
                 user.subscribeStatus = "Active";
+                
+                // Calculate Duration
+                int daysToAdd = 30; // Default
+                if (user.SubscriptionPlan == "1 Month") daysToAdd = 30;
+                else if (user.SubscriptionPlan == "3 Months") daysToAdd = 90;
+                else if (user.SubscriptionPlan == "6 Months") daysToAdd = 180;
+                else if (user.SubscriptionPlan == "12 Months") daysToAdd = 365;
+                // Fallback for legacy plans
+                else if (user.SubscriptionPlan == "Weekly") daysToAdd = 7;
+                else if (user.SubscriptionPlan == "Monthly") daysToAdd = 30;
+
+                // Extension Logic: If current end date is in the future, add to it.
+                // Otherwise, start from now.
+                if (user.SubscriptionEndDate != null && user.SubscriptionEndDate > DateTime.UtcNow)
+                {
+                    user.SubscriptionEndDate = user.SubscriptionEndDate.Value.AddDays(daysToAdd);
+                }
+                else
+                {
+                    user.SubscriptionStartDate = DateTime.UtcNow;
+                    user.SubscriptionEndDate = DateTime.UtcNow.AddDays(daysToAdd);
+                }
+
                 f_db.Update(user);
                 f_db.SaveChanges();
-                TempData["msg"] = $"User {user.name} approved successfully.";
+                TempData["msg"] = $"User {user.name} approved successfully for {user.SubscriptionPlan} (+{daysToAdd} days).";
             }
             return RedirectToAction("Applications");
         }
@@ -405,21 +466,67 @@ namespace fitnessCenter.Controllers
             var user = f_db.users.FirstOrDefault(u => u.manId == id);
             if (user != null)
             {
-                f_db.users.Remove(user);
+                // Rejecting an extension request might need to revert status?
+                // For simplicity, we remove application or reset status.
+                // Since user might be extending, removing the user entirely is BAD if they already have an account.
+                // WE SHOULD NOT DELETE THE USER IF THEY ARE EXTENDING.
+                
+                // Check if it's a new user (status New) or existing (PendingPayment)
+                if (user.subscribeStatus == "New")
+                {
+                    f_db.users.Remove(user);
+                    TempData["msg"] = "Application removed.";
+                }
+                else
+                {
+                     // Convert back to Active if they were extending, or Expired?
+                     // If they were "Active" before, we don't know easily without history.
+                     // But usually if rejected, they stay as they were or go to Expired.
+                     // Let's set to "Expired" or keep "PendingPayment" but notify?
+                     // Simplest: Set to "Expired" or "Active" (if they still have days).
+                     
+                     if (user.SubscriptionEndDate > DateTime.UtcNow)
+                     {
+                         user.subscribeStatus = "Active"; // Revert to active if time remains
+                         TempData["msg"] = "Extension rejected. User reverted to Active status.";
+                     }
+                     else
+                     {
+                         user.subscribeStatus = "Expired";
+                         TempData["msg"] = "Extension rejected. User set to Expired.";
+                     }
+                }
                 f_db.SaveChanges();
-                TempData["msg"] = "Application removed.";
             }
             return RedirectToAction("Applications");
         }
 
         public IActionResult ApplyAll()
         {
-            var newUsers = f_db.users.Where(u => u.subscribeStatus == "New").ToList();
-            if (newUsers.Any())
+            var pendingUsers = f_db.users.Where(u => u.subscribeStatus == "New" || u.subscribeStatus == "PendingPayment").ToList();
+            if (pendingUsers.Any())
             {
-                foreach (var user in newUsers)
+                foreach (var user in pendingUsers)
                 {
                     user.subscribeStatus = "Active";
+                    
+                    int daysToAdd = 30;
+                    if (user.SubscriptionPlan == "1 Month") daysToAdd = 30;
+                    else if (user.SubscriptionPlan == "3 Months") daysToAdd = 90;
+                    else if (user.SubscriptionPlan == "6 Months") daysToAdd = 180;
+                    else if (user.SubscriptionPlan == "12 Months") daysToAdd = 365;
+                    else if (user.SubscriptionPlan == "Weekly") daysToAdd = 7;
+                    else if (user.SubscriptionPlan == "Monthly") daysToAdd = 30;
+
+                    if (user.SubscriptionEndDate != null && user.SubscriptionEndDate > DateTime.UtcNow)
+                    {
+                        user.SubscriptionEndDate = user.SubscriptionEndDate.Value.AddDays(daysToAdd);
+                    }
+                    else
+                    {
+                        user.SubscriptionStartDate = DateTime.UtcNow;
+                        user.SubscriptionEndDate = DateTime.UtcNow.AddDays(daysToAdd);
+                    }
                 }
                 f_db.SaveChanges();
                 TempData["msg"] = "All applications approved.";
@@ -429,10 +536,10 @@ namespace fitnessCenter.Controllers
 
         public IActionResult RemoveAll()
         {
-            var newUsers = f_db.users.Where(u => u.subscribeStatus == "New").ToList();
-            if (newUsers.Any())
+            var pendingUsers = f_db.users.Where(u => u.subscribeStatus == "New" || u.subscribeStatus == "PendingPayment").ToList();
+            if (pendingUsers.Any())
             {
-                f_db.users.RemoveRange(newUsers);
+                f_db.users.RemoveRange(pendingUsers);
                 f_db.SaveChanges();
                 TempData["msg"] = "All applications removed.";
             }
@@ -447,13 +554,14 @@ namespace fitnessCenter.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddExercise(string name)
+        public IActionResult AddExercise(string name, decimal price)
         {
             if (!string.IsNullOrWhiteSpace(name))
             {
                 Exercise newEx = new Exercise
                 {
-                    exerciseType = name
+                    exerciseType = name,
+                    Price = price
                 };
                 f_db.exercises.Add(newEx);
                 f_db.SaveChanges();
@@ -471,6 +579,16 @@ namespace fitnessCenter.Controllers
             var ex = f_db.exercises.Find(id);
             if (ex != null)
             {
+                // Unassign this exercise from any coaches who have it
+                var specializedCoaches = f_db.cotches.Where(c => c.ExerciseId == id).ToList();
+                if (specializedCoaches.Any())
+                {
+                    foreach (var coach in specializedCoaches)
+                    {
+                        coach.ExerciseId = null;
+                    }
+                }
+
                 f_db.exercises.Remove(ex);
                 f_db.SaveChanges();
                 TempData["msg"] = "Exercise deleted successfully.";
@@ -478,17 +596,94 @@ namespace fitnessCenter.Controllers
             return RedirectToAction("Exercises");
         }
 
-        // Appointment Management
+        [HttpPost]
+        public IActionResult EditExercise(int id, string newName, decimal newPrice)
+        {
+            if (string.IsNullOrWhiteSpace(newName))
+            {
+                TempData["err"] = "New name cannot be empty.";
+                return RedirectToAction("Exercises");
+            }
+
+            var ex = f_db.exercises.Find(id);
+            if (ex != null)
+            {
+                ex.exerciseType = newName;
+                ex.Price = newPrice;
+                f_db.Update(ex);
+                f_db.SaveChanges();
+                TempData["msg"] = "Exercise updated successfully.";
+            }
+            else
+            {
+                TempData["err"] = "Exercise not found.";
+            }
+            return RedirectToAction("Exercises");
+        }
+
         public IActionResult Appointments()
         {
             var appointments = f_db.appointments
                 .Include(a => a.User)
                 .Include(a => a.Cotch)
                 .Include(a => a.Exercise)
-                .Where(a => a.Status == "Pending")
+                .Where(a => a.Status == "Pending" || a.Status == "CancellationPending")
                 .OrderByDescending(a => a.Id)
                 .ToList();
             return View(appointments);
+        }
+
+        public IActionResult ApproveCancellation(int id)
+        {
+            var appt = f_db.appointments
+                .Include(a => a.Cotch)
+                .Include(a => a.User)
+                .FirstOrDefault(a => a.Id == id); // Use FirstOrDefault to include related data
+
+            if (appt != null)
+            {
+                // 1. Notify the Coach
+                if (appt.CotchId != 0 && appt.Cotch != null)
+                {
+                    string notifTitle = "Appointment Cancelled";
+                    string notifBody = $"System: Your appointment with {appt.User?.name ?? "User"} on {appt.AppointmentDate} has been cancelled.";
+                    
+                    Notification n = new Notification(notifTitle, notifBody);
+                    n.ManId = appt.CotchId;
+                    f_db.notifications.Add(n);
+
+                    // 2. Restore the time slot to Coach's available times
+                    if (appt.Cotch.available_times == null)
+                    {
+                         appt.Cotch.available_times = new List<string>();
+                    }
+                    if (!string.IsNullOrEmpty(appt.AppointmentDate) && !appt.Cotch.available_times.Contains(appt.AppointmentDate))
+                    {
+                        appt.Cotch.available_times.Add(appt.AppointmentDate);
+                        f_db.Update(appt.Cotch);
+                    }
+                }
+
+                // 2.5 Notify the User & Unassign Coach
+                if (appt.UserId != 0)
+                {
+                     Notification nUser = new Notification("Cancellation Approved", $"Your request to cancel the appointment on {appt.AppointmentDate} has been approved.");
+                     nUser.ManId = appt.UserId;
+                     f_db.notifications.Add(nUser);
+
+                     // Remove Coach from User
+                     if (appt.User != null)
+                     {
+                         appt.User.CotchId = null;
+                     }
+                }
+
+                // 3. Remove the appointment
+                f_db.appointments.Remove(appt);
+                f_db.SaveChanges();
+                TempData["msg"] = "Cancellation approved, coach notified, and time slot restored.";
+            }
+            return RedirectToAction("Appointments");
         }
 
         public IActionResult ApproveAppointment(int id)
@@ -580,6 +775,11 @@ namespace fitnessCenter.Controllers
                 Notification n = new Notification(notifTitle, notifBody);
                 n.ManId = appt.Cotch.manId;
                 f_db.notifications.Add(n);
+                
+                // 2.5 Notify the User
+                Notification nUser = new Notification("Appointment Approved", $"Your appointment with {appt.Cotch.name} on {appt.AppointmentDate} has been confirmed.");
+                nUser.ManId = appt.User.manId;
+                f_db.notifications.Add(nUser);
 
                 // 3. Assign Coach to User
                 appt.User.CotchId = appt.CotchId;

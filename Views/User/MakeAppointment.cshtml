@@ -60,15 +60,18 @@
                     <div class="mb-4">
                         <label class="form-label fw-bold">Select Exercise</label>
                         <select name="exerciseId" id="exerciseSelect" class="form-select" required>
-                            <option value="">-- Choose Exercise --</option>
+                            <option value="" data-price="0">-- Choose Exercise --</option>
                             @if (ViewBag.Exercises != null)
                             {
                                 foreach (var item in ViewBag.Exercises)
                                 {
-                                    <option value="@item.exId">@item.exerciseType</option>
+                                    <option value="@item.exId" data-price="@item.Price">@item.exerciseType</option>
                                 }
                             }
                         </select>
+                        <div id="priceDisplay" class="mt-2 text-warning fw-bold" style="display:none;">
+                            <i class="fa-solid fa-tag me-1"></i> Price: $<span id="priceValue">0.00</span>
+                        </div>
                     </div>
 
                     <div class="mb-4">
@@ -101,10 +104,22 @@
     const exerciseSelect = document.getElementById('exerciseSelect');
     const coachSelect = document.getElementById('coachSelect');
     const timeSelect = document.getElementById('timeSelect');
+    const priceDisplay = document.getElementById('priceDisplay');
+    const priceValue = document.getElementById('priceValue');
 
     // Filter Coaches by Exercise
     exerciseSelect.addEventListener('change', function() {
         const exerciseId = this.value;
+        const selectedOption = this.options[this.selectedIndex];
+        const price = selectedOption.getAttribute('data-price');
+        
+        // Update Price Display
+        if (price && parseFloat(price) > 0) {
+            priceValue.textContent = price;
+            priceDisplay.style.display = 'block';
+        } else {
+            priceDisplay.style.display = 'none';
+        }
         
         // Reset Coach and Time
         coachSelect.innerHTML = '<option value="">Loading...</option>';

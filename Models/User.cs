@@ -12,7 +12,12 @@ public class User : Man
     public Cotch? cotch { get; set; } // it will be available after read from db available cotchs has the same exercise
 
     [Display(Name = "Subscribe Status")]
-    public string? subscribeStatus { get; set; } // left 30 days - finish
+    public string? subscribeStatus { get; set; } // "New", "PendingPayment", "Active", "Expired"
+    
+    public string? SubscriptionPlan { get; set; } // "Weekly", "Monthly"
+    public DateTime? SubscriptionStartDate { get; set; }
+    public DateTime? SubscriptionEndDate { get; set; }
+
     public int leftDaySubscribe;
     public Exercise? exercise { get; set; } // this will be some thing like dropdown list 
                                             // after exercise selected cotch dropdown list will be available

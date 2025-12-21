@@ -37,11 +37,108 @@ namespace fitnessCenter.Controllers
                 return RedirectToAction("Login", "Home");
             }
 
+            // Enforce Profile Completion (Weight & Height) for Active Users
+            if (user.subscribeStatus == "Active" && (user.wight == 0 || user.boy == 0))
+            {
+                TempData["msg"] = "Please complete your profile (Weight & Height) to access the dashboard.";
+                return RedirectToAction("EditProfile");
+            }
+            
+            // Check for active appointment
+            var activeAppt = f_db.appointments
+                .Include(a => a.Cotch)
+                .Include(a => a.Exercise)
+                .FirstOrDefault(a => a.UserId == id && a.Status != "Rejected");
+                
+            ViewBag.CurrentAppointment = activeAppt;
+
             return View(user);
+        }
+
+        public IActionResult MyAppointments()
+        {
+            int? id = HttpContext.Session.GetInt32("UserId");
+            if (id == null) return RedirectToAction("Login", "Home");
+
+
+
+            // Enforce Profile Completion
+            var user = f_db.users.FirstOrDefault(u => u.manId == id);
+            if (user != null && user.subscribeStatus == "Active" && (user.wight == 0 || user.boy == 0))
+            {
+                TempData["msg"] = "Please complete your profile (Weight & Height) first.";
+                return RedirectToAction("EditProfile");
+            }
+
+            var appt = f_db.appointments
+                .Include(a => a.Cotch)
+                .Include(a => a.Exercise)
+                .FirstOrDefault(a => a.UserId == id && a.Status != "Rejected");
+
+            if (appt == null)
+            {
+                TempData["msg"] = "You don't have any active appointments.";
+                return RedirectToAction("Index");
+            }
+
+            return View(appt);
+        }
+
+        public IActionResult CancelAppointment(int id)
+        {
+            var appt = f_db.appointments.Find(id);
+            if (appt != null)
+            {
+                appt.Status = "CancellationPending";
+                f_db.SaveChanges();
+                TempData["msg"] = "Cancellation requested. Waiting for Admin approval.";
+            }
+            return RedirectToAction("MyAppointments");
+        }
+
+        [HttpPost]
+        public IActionResult RescheduleAppointment(int id, string newDate)
+        {
+            var appt = f_db.appointments
+                .Include(a => a.Cotch)
+                .FirstOrDefault(a => a.Id == id);
+
+            if (appt != null && !string.IsNullOrEmpty(newDate))
+            {
+                // If previously approved, return the old slot to the coach
+                if (appt.Status == "Approved" && appt.Cotch != null)
+                {
+                    if (appt.Cotch.available_times == null) appt.Cotch.available_times = new List<string>();
+                    
+                    // Add old date back if not present
+                    if (!string.IsNullOrEmpty(appt.AppointmentDate) && !appt.Cotch.available_times.Contains(appt.AppointmentDate))
+                    {
+                        appt.Cotch.available_times.Add(appt.AppointmentDate);
+                        f_db.Update(appt.Cotch);
+                    }
+                }
+
+                appt.AppointmentDate = newDate;
+                appt.Status = "Pending"; // Needs re-approval
+                f_db.SaveChanges();
+                TempData["msg"] = "Reschedule requested. Waiting for Admin approval.";
+            }
+            return RedirectToAction("MyAppointments");
         }
 
         public IActionResult PlanSelection(string type)
         {
+            int? id = HttpContext.Session.GetInt32("UserId");
+            if (id == null) return RedirectToAction("Login", "Home");
+
+            // Enforce Profile Completion
+            var user = f_db.users.FirstOrDefault(u => u.manId == id);
+            if (user != null && user.subscribeStatus == "Active" && (user.wight == 0 || user.boy == 0))
+            {
+                TempData["msg"] = "Please complete your profile (Weight & Height) first.";
+                return RedirectToAction("EditProfile");
+            }
+
             ViewBag.CurrentPlanType = type;
             return View();
         }
@@ -123,6 +220,13 @@ namespace fitnessCenter.Controllers
                 
                 if (dbUser != null)
                 {
+                    // Enforce Height/Weight validation
+                    if (u1.wight <= 0 || u1.boy <= 0)
+                    {
+                        TempData["err"] = "Weight and Height are required and must be valid numbers.";
+                        return RedirectToAction("EditProfile");
+                    }
+
                     // Update only editable fields
                     dbUser.name = u1.name;
                     dbUser.email = u1.email;
@@ -218,6 +322,17 @@ namespace fitnessCenter.Controllers
 
         public IActionResult MakeAppointment()
         {
+            int? id = HttpContext.Session.GetInt32("UserId");
+            if (id == null) return RedirectToAction("Login", "Home");
+
+            // Enforce Profile Completion
+            var user = f_db.users.FirstOrDefault(u => u.manId == id);
+            if (user != null && user.subscribeStatus == "Active" && (user.wight == 0 || user.boy == 0))
+            {
+                TempData["msg"] = "Please complete your profile (Weight & Height) first.";
+                return RedirectToAction("EditProfile");
+            }
+
             ViewBag.Exercises = f_db.exercises.ToList();
             ViewBag.Coaches = f_db.cotches.ToList();
             return View();
@@ -336,6 +451,32 @@ namespace fitnessCenter.Controllers
                 f_db.Update(user.dailyGoal);
                 f_db.SaveChanges();
                 TempData["msg"] = user.dailyGoal.status ? "Goal marked as Completed! Great job!" : "Goal marked as In Progress.";
+            }
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public IActionResult Subscribe()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Subscribe(string planType)
+        {
+            int? id = HttpContext.Session.GetInt32("UserId");
+            if (id == null) return RedirectToAction("Login", "Home");
+
+            var user = f_db.users.FirstOrDefault(u => u.manId == id);
+            if (user != null)
+            {
+                user.SubscriptionPlan = planType;
+                user.subscribeStatus = "PendingPayment";
+                // Optionally set start date here or wait for admin approval
+                f_db.Update(user);
+                f_db.SaveChanges();
+                TempData["msg"] = "Subscription requested! Please wait for Admin approval.";
+                return RedirectToAction("Index");
             }
             return RedirectToAction("Index");
         }

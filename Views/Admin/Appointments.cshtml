@@ -126,6 +126,7 @@
                                     @if(item.Status == "Pending") { <span class="badge bg-warning text-dark">Pending</span> }
                                     else if(item.Status == "Approved") { <span class="badge bg-success">Approved</span> }
                                     else if(item.Status == "Rejected") { <span class="badge bg-danger">Rejected</span> }
+                                    else if(item.Status == "CancellationPending") { <span class="badge bg-danger">Cancel Request</span> }
                                     else { <span class="badge bg-secondary">@item.Status</span> }
                                 </td>
                                 <td class="text-end">
@@ -136,6 +137,12 @@
                                         </a>
                                         <a asp-action="RejectAppointment" asp-route-id="@item.Id" class="glass-btn-danger">
                                             <i class="fa-solid fa-xmark me-1"></i>Reject
+                                        </a>
+                                    }
+                                    else if (item.Status == "CancellationPending")
+                                    {
+                                        <a asp-action="ApproveCancellation" asp-route-id="@item.Id" class="glass-btn-danger border-white text-white">
+                                            <i class="fa-solid fa-trash-can me-1"></i>Approve Cancel
                                         </a>
                                     }
                                     else

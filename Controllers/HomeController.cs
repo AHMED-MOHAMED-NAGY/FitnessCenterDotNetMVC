@@ -298,6 +298,17 @@ public class HomeController : Controller
 
         if (man == null) return RedirectToAction("Login");
 
+        // Enforce Profile Completion (Weight & Height) for Active Users
+        // Casting check to access wight and boy if man is a User
+        if (man is User u)
+        {
+             if (u.subscribeStatus == "Active" && (u.wight == 0 || u.boy == 0))
+             {
+                 TempData["msg"] = "Please complete your profile (Weight & Height) first.";
+                 return RedirectToAction("EditProfile", "User");
+             }
+        }
+
         // Sort notifications: Newest first
         if (man.notifications != null)
         {

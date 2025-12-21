@@ -1,6 +1,9 @@
 using System.Text;
 using System.Text.Json;
 using System.Net.Http.Headers;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.Formats.Png;
 
 namespace fitnessCenter.Services
 {
@@ -23,14 +26,42 @@ namespace fitnessCenter.Services
                 return ("Error: API Key is missing. Please configure Gemini:ApiKey in appsettings.json.", null);
             }
 
-            // 1. Prepare Image
+            // 1. Prepare Image (Resize for Stability AI)
             string base64Image = null;
+            byte[] imageBytes = null;
             if (imageFile != null && imageFile.Length > 0)
             {
                 using (var ms = new MemoryStream())
                 {
                     await imageFile.CopyToAsync(ms);
-                    base64Image = Convert.ToBase64String(ms.ToArray());
+                    ms.Position = 0; // Reset for reading
+
+                    // Resize to 1024x1024 for SDXL
+                    try 
+                    {
+                        using (var image = SixLabors.ImageSharp.Image.Load(ms))
+                        {
+                            image.Mutate(x => x.Resize(new ResizeOptions
+                            {
+                                Size = new Size(1024, 1024),
+                                Mode = ResizeMode.Crop // Crop to fill 1024x1024
+                            }));
+                            
+                            using (var outMs = new MemoryStream())
+                            {
+                                await image.SaveAsPngAsync(outMs);
+                                imageBytes = outMs.ToArray();
+                                base64Image = Convert.ToBase64String(imageBytes);
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Image resize failed: " + ex.Message);
+                        // Fallback to original if resize fails (though likely to fail API too)
+                        imageBytes = ms.ToArray();
+                        base64Image = Convert.ToBase64String(imageBytes);
+                    }
                 }
             }
 
@@ -51,7 +82,6 @@ namespace fitnessCenter.Services
             ";
 
             // 3. Call Gemini API (Text Generation)
-            // Note: This matches the structure for Gemini 1.5 Flash/Pro via REST
             var requestBody = new
             {
                 contents = new[]
@@ -75,7 +105,6 @@ namespace fitnessCenter.Services
             {
                 var resultJson = await response.Content.ReadAsStringAsync();
                 using var doc = JsonDocument.Parse(resultJson);
-                // Extract text from response structure
                 try
                 {
                     planText = doc.RootElement
@@ -95,47 +124,85 @@ namespace fitnessCenter.Services
                 planText = $"Error: {response.ReasonPhrase} - {await response.Content.ReadAsStringAsync()}";
             }
 
-            // 4. Image Generation using Imagen
-            string afterImageUrl = "https://placehold.co/600x400?text=Image+Generation+Failed"; // Fallback
+            // 4. Image Generation using Stability AI (Image-to-Image)
+            string afterImageUrl = "https://placehold.co/600x400?text=Image+Generation+Failed";
 
             try
             {
-                var imagePrompt = $"A realistic full-body fitness transformation photo of a male, {planType} physique, fit and muscular, {user.boy}cm height. High quality, photorealistic, professional lighting, 4k.";
-                
-                // Imagen API structure
-                var imageRequestBody = new
+                var stabilityApiKey = _configuration["StabilityAI:ApiKey"];
+                if (string.IsNullOrEmpty(stabilityApiKey))
                 {
-                    instances = new[]
+                    Console.WriteLine("Stability AI API Key missing.");
+                }
+                else if (imageBytes != null) // Require init image for img2img
+                {
+                    // Customized prompt based on plan & stats
+                    string stylePrompt;
+                    string negativePrompt = "bad anatomy, blurred, low quality, distortion, ugly face";
+                    string strength = "0.60"; // Default strength
+
+                    if (planType.ToLower().Contains("bulk")) 
                     {
-                        new { prompt = imagePrompt }
-                    },
-                    parameters = new
+                        stylePrompt = $"muscular bodybuilder, massive muscle gain, bigger arms, broad shoulders, pectoral hypertrophy. He has transformed from {user.wight}kg to a muscular build over {duration} months.";
+                        negativePrompt += ", skinny, frail, small";
+                        if (duration >= 6) strength = "0.55"; // Allow more change for long bulking
+                    } 
+                    else // Cutting
                     {
-                        sampleCount = 1,
-                        aspectRatio = "1:1"
+                        stylePrompt = $"lean athletic physique, significant weight loss, defined six pack abs, flat stomach, vascularity. He has lost weight from {user.wight}kg to a shredded physique over {duration} months.";
+                        negativePrompt += ", obese, fat, belly, chubby, overweight";
+                        if (duration >= 6) strength = "0.50"; // Allow significant change for long cutting
                     }
-                };
 
-                var imageJsonContent = new StringContent(JsonSerializer.Serialize(imageRequestBody), Encoding.UTF8, "application/json");
-                // Using the available model from the list: imagen-4.0-fast-generate-001
-                var imageResponse = await _httpClient.PostAsync($"https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-fast-generate-001:predict?key={apiKey}", imageJsonContent);
+                    // Prompt emphasizing identity retention AND clothing
+                    var imagePrompt = $"A realistic fitness transformation result of this man: {stylePrompt}. He is {user.age} years old, {user.boy}cm tall. Wearing athletic gym shorts, shirtless torso. Keep the exact same facial features, beard, hairstyle, and head structure. High quality, photorealistic, gym lighting, 8k.";
 
-                if (imageResponse.IsSuccessStatusCode)
-                {
-                    var imageResultJson = await imageResponse.Content.ReadAsStringAsync();
-                    using var imageDoc = JsonDocument.Parse(imageResultJson);
+                    using var form = new MultipartFormDataContent();
+                    form.Add(new StringContent(imagePrompt), "text_prompts[0][text]");
+                    form.Add(new StringContent("1"), "text_prompts[0][weight]");
                     
-                    // Parse response: { "predictions": [ { "bytesBase64Encoded": "..." } ] }
-                    if (imageDoc.RootElement.TryGetProperty("predictions", out var predictions) && predictions.GetArrayLength() > 0)
+                    form.Add(new StringContent(negativePrompt), "text_prompts[1][text]");
+                    form.Add(new StringContent("-1"), "text_prompts[1][weight]");
+
+                    form.Add(new StringContent(strength), "image_strength"); 
+                    form.Add(new StringContent("35"), "steps");
+                    form.Add(new ByteArrayContent(imageBytes), "init_image", "image.png");
+
+                    var request = new HttpRequestMessage(HttpMethod.Post, "https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/image-to-image");
+                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", stabilityApiKey);
+                    request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    request.Content = form;
+
+                    var imageResponse = await _httpClient.SendAsync(request);
+
+                    if (imageResponse.IsSuccessStatusCode)
                     {
-                        var base64 = predictions[0].GetProperty("bytesBase64Encoded").GetString();
-                        afterImageUrl = $"data:image/png;base64,{base64}";
+                        var imageResultJson = await imageResponse.Content.ReadAsStringAsync();
+                        using var imageDoc = JsonDocument.Parse(imageResultJson);
+
+                        if (imageDoc.RootElement.TryGetProperty("artifacts", out var artifacts) && artifacts.GetArrayLength() > 0)
+                        {
+                            var base64 = artifacts[0].GetProperty("base64").GetString();
+                            afterImageUrl = $"data:image/png;base64,{base64}";
+                        }
+                    }
+                    else
+                    {
+                        var errorContent = await imageResponse.Content.ReadAsStringAsync();
+                        Console.WriteLine($"Stability AI Failed: {imageResponse.StatusCode} - {errorContent}");
+                        
+                        // Log error to file for debugging
+                        try {
+                            await File.WriteAllTextAsync(@"C:\Users\moham\.gemini\antigravity\brain\e22cb01f-472d-41b0-a0bf-3b962bf552dc\last_ai_error.txt", $"Status: {imageResponse.StatusCode}\nError: {errorContent}");
+                        } catch { /* ignore file write error */ }
+
+                        afterImageUrl = $"https://placehold.co/600x400?text=Error+{(int)imageResponse.StatusCode}";
                     }
                 }
-                else
+                else 
                 {
-                    // If 4.0 fails, try 3.0 as fallback or just log (visible in UI via fallback image)
-                     Console.WriteLine($"Image Gen Failed: {imageResponse.StatusCode}");
+                    // Fallback or handle no image case (optional: could do text-to-image here if needed)
+                    Console.WriteLine("No image uploaded for Image-to-Image generation.");
                 }
             }
             catch (Exception ex)

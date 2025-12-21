@@ -1,0 +1,216 @@
+@model fitnessCenter.Models.Appointment
+
+@{
+    ViewData["Title"] = "My Appointments";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    body {
+        background: url('/images/indexBackground.jpg') no-repeat center center fixed;
+        background-size: cover;
+    }
+
+    .glass-panel {
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-top: 2rem;
+        color: white;
+    }
+
+    .glass-btn-danger {
+        background: rgba(220, 53, 69, 0.2);
+        color: #ff6b6b;
+        border: 1px solid rgba(220, 53, 69, 0.4);
+        padding: 0.5rem 1.5rem;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+    
+    .glass-btn-danger:hover {
+         background: rgba(220, 53, 69, 0.4);
+         color: white;
+    }
+
+    .glass-btn-warning {
+        background: rgba(255, 193, 7, 0.2);
+        color: #ffc107;
+        border: 1px solid rgba(255, 193, 7, 0.4);
+        padding: 0.5rem 1.5rem;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+
+    .glass-btn-warning:hover {
+        background: rgba(255, 193, 7, 0.4);
+        color: white;
+    }
+
+    .detail-row {
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        padding: 1rem 0;
+    }
+
+    .detail-label {
+        font-weight: bold;
+        color: rgba(255,255,255,0.7);
+    }
+    
+    .status-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 50rem;
+        font-size: 0.9em;
+    }
+    .status-Pending { background: rgba(255, 193, 7, 0.2); color: #ffc107; border: 1px solid #ffc107; }
+    .status-Approved { background: rgba(25, 135, 84, 0.2); color: #198754; border: 1px solid #198754; }
+    .status-CancellationPending { background: rgba(220, 53, 69, 0.2); color: #ff6b6b; border: 1px solid #ff6b6b; }
+</style>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="glass-panel">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="mb-0"><i class="fa-solid fa-calendar-check me-2"></i>My Appointment</h2>
+                    <a asp-action="Index" class="btn btn-outline-light btn-sm"><i class="fa-solid fa-arrow-left me-1"></i>Back</a>
+                </div>
+
+                @if (TempData["msg"] != null)
+                {
+                    <div class="alert alert-success bg-transparent text-white border-white">@TempData["msg"]</div>
+                }
+
+                <div class="detail-row d-flex justify-content-between">
+                    <span class="detail-label">Status:</span>
+                    <span class="status-badge status-@Model.Status">
+                        @if (Model.Status == "CancellationPending")
+                        {
+                            <span>Cancellation Pending</span>
+                        }
+                        else
+                        {
+                            @Model.Status
+                        }
+                    </span>
+                </div>
+
+                <div class="detail-row d-flex justify-content-between">
+                    <span class="detail-label">Exercise:</span>
+                    <span>
+                         @(Model.Exercise?.exerciseType ?? "N/A") 
+                         <span class="text-warning ms-2">(Price: $@(Model.Exercise?.Price))</span>
+                    </span>
+                </div>
+
+                <div class="detail-row d-flex justify-content-between">
+                    <span class="detail-label">Coach:</span>
+                    <span>@(Model.Cotch?.name ?? "N/A")</span>
+                </div>
+
+                <div class="detail-row d-flex justify-content-between">
+                    <span class="detail-label">Date & Time:</span>
+                    <span>@Model.AppointmentDate</span>
+                </div>
+
+                <div class="mt-5 d-flex gap-3 justify-content-center">
+                    @if (Model.Status != "CancellationPending")
+                    {
+                        <button type="button" class="glass-btn-warning border-0" data-bs-toggle="modal" data-bs-target="#rescheduleModal">
+                            <i class="fa-solid fa-calendar-days me-2"></i>Reschedule
+                        </button>
+                        
+                        <a asp-action="CancelAppointment" asp-route-id="@Model.Id" class="glass-btn-danger" onclick="return confirm('Are you sure you want to request cancellation for this appointment?')">
+                            <i class="fa-solid fa-xmark me-2"></i>Cancel Appointment
+                        </a>
+                    }
+                    else
+                    {
+                        <div class="text-center text-white-50">
+                            <i class="fa-solid fa-hourglass-half me-2"></i>
+                            Your cancellation request is pending Admin approval.
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Reschedule Modal -->
+<div class="modal fade" id="rescheduleModal" tabindex="-1" aria-hidden="true" style="backdrop-filter: blur(5px);">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background: rgba(30, 30, 40, 0.95); border: 1px solid rgba(255,255,255,0.1); color: white;">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title">Reschedule Appointment</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="RescheduleAppointment" method="post">
+                <div class="modal-body">
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <!-- Note: For a real app, we'd fetch the coach's available times again via AJAX. 
+                         For now, we'll assume the user knows valid times or we could implement the dropdown logic here too.
+                         To keep it simple per requirements, we will use a text input or simple selector if we assumed times are known,
+                         but let's do a dropdown populated via JS similar to MakeAppt if possible, or just a simple input for MVP. -->
+                    <div class="mb-3">
+                        <label class="form-label">New Date & Time</label>
+                         <!-- Ideally this should be a dropdown of available times. 
+                              Since available times depend on the coach, we might need to fetch them. -->
+                         <select name="newDate" class="form-select bg-dark text-white border-secondary" id="timeSelect" required>
+                             <option value="">Select a new time...</option>
+                             <!-- Will be populated by JS -->
+                         </select>
+                         <div id="loadingTimes" class="text-info mt-2" style="display:none;">Loading available times...</div>
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-warning">Request Reschedule</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var myModalEl = document.getElementById('rescheduleModal');
+        myModalEl.addEventListener('show.bs.modal', function (event) {
+            // Fetch available times for this coach
+            var coachId = @(Model.CotchId);
+            var timeSelect = document.getElementById('timeSelect');
+            var loading = document.getElementById('loadingTimes');
+            
+            timeSelect.innerHTML = '<option value="">Select a new time...</option>';
+            loading.style.display = 'block';
+
+            fetch('/User/GetCoachTimes?id=' + coachId)
+                .then(response => response.json())
+                .then(data => {
+                    loading.style.display = 'none';
+                    if (data && data.length > 0) {
+                        data.forEach(time => {
+                            var option = document.createElement('option');
+                            option.value = time;
+                            option.text = time;
+                            timeSelect.appendChild(option);
+                        });
+                    } else {
+                        var option = document.createElement('option');
+                        option.text = "No available times";
+                        option.disabled = true;
+                        timeSelect.appendChild(option);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    loading.textContent = "Error loading times.";
+                });
+        });
+    });
+</script>

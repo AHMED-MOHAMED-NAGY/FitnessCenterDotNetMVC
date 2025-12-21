@@ -56,18 +56,43 @@
                 </div>
             </div>
             <div class="col-lg-4 mt-4 mt-lg-0">
-                <h4 class="text-success mb-3">Projected Result</h4>
-                 @if (Model != null && !string.IsNullOrEmpty(Model.AfterImageUrl))
-                {
-                    <img src="@Model.AfterImageUrl" class="img-fluid border border-secondary" alt="Projected Result" />
-                }
-                else
-                {
-                    <div class="p-5 text-center rounded border border-secondary" style="background: rgba(255,255,255,0.05);">
-                        <i class="fa-solid fa-image fs-1 mb-3 opacity-50"></i>
-                        <p>No visualization available</p>
-                    </div>
-                }
+                <h4 class="text-warning mb-3 text-center">Transformation Preview</h4>
+                
+                <!-- Before Image -->
+                <div class="mb-4">
+                    <p class="fw-bold text-center mb-2">Before (Current)</p>
+                    @if (Model != null && !string.IsNullOrEmpty(Model.BeforeImageUrl))
+                    {
+                        <img src="@Model.BeforeImageUrl" class="img-fluid border border-secondary w-100" alt="Current Physique" />
+                    }
+                    else
+                    {
+                        <div class="p-4 text-center rounded border border-secondary" style="background: rgba(255,255,255,0.05);">
+                            <span class="text-white-50">No Image Uploaded</span>
+                        </div>
+                    }
+                </div>
+
+                <!-- Arrow -->
+                <div class="text-center mb-4">
+                     <i class="fa-solid fa-arrow-down fs-2 text-info"></i>
+                </div>
+
+                <!-- After Image -->
+                <div>
+                    <p class="fw-bold text-center mb-2 text-success">After (@Model?.Duration Months)</p>
+                     @if (Model != null && !string.IsNullOrEmpty(Model.AfterImageUrl))
+                    {
+                        <img src="@Model.AfterImageUrl" class="img-fluid border border-success w-100" style="box-shadow: 0 0 20px rgba(25,135,84,0.4);" alt="Projected Result" />
+                    }
+                    else
+                    {
+                        <div class="p-4 text-center rounded border border-secondary" style="background: rgba(255,255,255,0.05);">
+                            <i class="fa-solid fa-image fs-1 mb-3 opacity-50"></i>
+                            <p>Visualization generating...</p>
+                        </div>
+                    }
+                </div>
             </div>
         </div>
 

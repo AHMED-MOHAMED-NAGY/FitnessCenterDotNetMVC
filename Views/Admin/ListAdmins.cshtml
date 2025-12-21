@@ -107,10 +107,7 @@
                                         Manage
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-glass dropdown-menu-end">
-                                        <li><a class="dropdown-item" asp-action="DetailsAdmin" asp-route-id="@item.manId"><i class="fa-solid fa-eye me-2"></i>Details</a></li>
                                         <li><a class="dropdown-item" asp-action="SendNotification" asp-route-id="@item.manId"><i class="fa-solid fa-envelope me-2"></i>Message</a></li>
-                                        <li><hr class="dropdown-divider bg-secondary"></li>
-                                        <li><a class="dropdown-item text-info" asp-action="MakeAdminCtch" asp-route-id="@item.manId"><i class="fa-solid fa-user-tie me-2"></i>Make Coach</a></li>
                                         <li><hr class="dropdown-divider bg-secondary"></li>
                                         <li><a class="dropdown-item text-danger" asp-action="DeleteAdmin" asp-route-id="@item.manId"><i class="fa-solid fa-trash me-2"></i>Delete</a></li>
                                     </ul>

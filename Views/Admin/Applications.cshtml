@@ -51,7 +51,76 @@
 
 
 
+
+    <!-- SECTION 1: PENDING SUBSCRIPTIONS -->
+    <div class="glass-section">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="text-warning mb-0"><i class="fa-solid fa-user-clock me-2"></i>Pending User Subscriptions</h3>
+            <div>
+                @if (Model.NewUsers != null && Model.NewUsers.Any())
+                {
+                    <a asp-action="ApplyAll" class="btn btn-sm btn-success me-2"><i class="fa-solid fa-check-double me-1"></i>Approve All</a>
+                    <a asp-action="RemoveAll" class="btn btn-sm btn-danger"><i class="fa-solid fa-trash me-1"></i>Reject All</a>
+                }
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Plan</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.NewUsers != null && Model.NewUsers.Any())
+                    {
+                        foreach (var user in Model.NewUsers)
+                        {
+                            <tr style="background: rgba(0,0,0,0.2);">
+                                <td>@user.name</td>
+                                <td>@user.email</td>
+                                <td>
+                                    <span class="badge bg-primary">@user.SubscriptionPlan</span>
+                                </td>
+                                <td>
+                                    @if(user.subscribeStatus == "PendingPayment")
+                                    {
+                                        <span class="badge bg-warning text-dark">Pending Payment</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-info">New Account</span>
+                                    }
+                                </td>
+                                <td>
+                                    <a asp-action="ApproveUser" asp-route-id="@user.manId" class="btn btn-success btn-action-sm me-1" title="Approve">
+                                        <i class="fa-solid fa-check"></i>
+                                    </a>
+                                    <a asp-action="RejectUser" asp-route-id="@user.manId" class="btn btn-danger btn-action-sm" title="Reject">
+                                        <i class="fa-solid fa-xmark"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center text-white-50 py-3">No pending applications.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div> 
+
     <!-- SECTION 2: APPOINTMENT HISTORY (Processed) -->
+
     <div class="glass-section">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h3 class="text-info mb-0"><i class="fa-solid fa-clock-rotate-left me-2"></i>Processed Appointments History</h3>

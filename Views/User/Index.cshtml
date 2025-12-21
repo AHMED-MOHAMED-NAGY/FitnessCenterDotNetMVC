@@ -117,17 +117,88 @@
         </div>
     }
     
-    <!-- Header -->
+@if (Model.subscribeStatus != "Active" && (Model.SubscriptionEndDate == null || Model.SubscriptionEndDate < DateTime.UtcNow))
+    {
+        <!-- Restricted Access View -->
+        <div class="glass-panel text-center py-5 mt-5">
+            <div class="mb-4">
+                <i class="fa-solid fa-lock fs-1 text-warning mb-3 icon-glow"></i>
+                <h1 class="display-4 fw-bold">Account Locked</h1>
+                <p class="lead text-white-50">You need an active subscription to access the full dashboard.</p>
+            </div>
+
+            @if (string.IsNullOrEmpty(Model.subscribeStatus) || Model.subscribeStatus == "New")
+            {
+                <div class="alert alert-info d-inline-block bg-transparent border-info text-info mb-4">
+                    <i class="fa-solid fa-info-circle me-2"></i>Please subscribe to a plan to get started.
+                </div>
+                <div>
+                    <a asp-action="Subscribe" class="btn btn-lg btn-warning px-5 rounded-pill shadow-lg">
+                        <i class="fa-solid fa-crown me-2"></i>Subscribe Now
+                    </a>
+                </div>
+            }
+            else if (Model.subscribeStatus == "PendingPayment")
+            {
+                <div class="alert alert-warning d-inline-block bg-transparent border-warning text-warning mb-4">
+                    <i class="fa-solid fa-clock me-2"></i>Your subscription is pending Admin approval.
+                </div>
+                <p>Please make your deposit and wait for confirmation.</p>
+            }
+             else if (Model.subscribeStatus == "Expired")
+            {
+                 <div class="alert alert-danger d-inline-block bg-transparent border-danger text-danger mb-4">
+                    <i class="fa-solid fa-hourglass-end me-2"></i>Your subscription has expired.
+                </div>
+                <div>
+                    <a asp-action="Subscribe" class="btn btn-lg btn-danger px-5 rounded-pill shadow-lg">
+                        <i class="fa-solid fa-rotate me-2"></i>Renew Subscription
+                    </a>
+                </div>
+            }
+            
+            <div class="mt-5">
+                 <a asp-controller="Home" asp-action="Logout" class="btn btn-outline-light rounded-pill px-4">
+                    <i class="fa-solid fa-arrow-right-from-bracket me-2"></i>Logout
+                </a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- Full Dashboard Content -->
+        
+        <!-- Header -->
     <div class="glass-panel d-flex justify-content-between align-items-center">
-        <a asp-action="EditProfile" class="d-flex align-items-center text-decoration-none text-white" style="transition: transform 0.2s;" onmouseover="this.style.transform='translateX(5px)'" onmouseout="this.style.transform='translateX(0)'">
-            <div class="rounded-circle bg-white text-dark d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px; font-size: 1.5rem;">
-                <i class="fa-solid fa-user"></i>
-            </div>
-            <div>
-                <h3 class="mb-0">Welcome back, @Model.userName</h3>
-                <small class="text-white-50">Edit Profile <i class="fa-solid fa-pen-to-square ms-1"></i></small>
-            </div>
-        </a>
+        <div>
+           <a asp-action="EditProfile" class="d-flex align-items-center text-decoration-none text-white mb-2" style="transition: transform 0.2s;" onmouseover="this.style.transform='translateX(5px)'" onmouseout="this.style.transform='translateX(0)'">
+                <div class="rounded-circle bg-white text-dark d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px; font-size: 1.5rem;">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+                <div>
+                    <h3 class="mb-0">Welcome back, @Model.userName</h3>
+                    <small class="text-white-50">Edit Profile <i class="fa-solid fa-pen-to-square ms-1"></i></small>
+                </div>
+            </a>
+            
+             <!-- Subscription Status -->
+            @if(Model.SubscriptionEndDate != null)
+            {
+                var daysLeft = (Model.SubscriptionEndDate.Value - DateTime.UtcNow).Days;
+                <div class="d-flex align-items-center gap-3">
+                    <div class="badge @(daysLeft < 5 ? "bg-danger" : "bg-success") text-white px-3 py-2 rounded-pill">
+                        <i class="fa-solid fa-hourglass-half me-2"></i>@daysLeft Days Left
+                    </div>
+                    <a asp-action="Subscribe" class="btn btn-sm btn-outline-light rounded-pill">
+                        <i class="fa-solid fa-plus me-1"></i>Extend
+                    </a>
+                    @if(Model.subscribeStatus == "PendingPayment")
+                    {
+                         <span class="badge bg-warning text-dark"><i class="fa-solid fa-clock me-1"></i>Extension Pending</span>
+                    }
+                </div>
+            }
+        </div>
         
         <div class="d-flex align-items-center gap-4">
             @if(Model.cotch != null)
@@ -144,6 +215,7 @@
              <!-- Notifications Link -->
             <a asp-controller="Home" asp-action="Notifications" class="text-white fs-4 position-relative text-decoration-none" title="Notifications">
                 <i class="fa-solid fa-bell"></i>
+                @await Component.InvokeAsync("NotificationBadge")
             </a>
         </div>
     </div>
@@ -152,15 +224,28 @@
         <!-- Main Actions -->
         <div class="col-lg-7">
             <div class="row g-4">
-                <!-- Make Appointment -->
+                <!-- Make Appointment / My Appointments -->
                 <div class="col-md-6">
-                    <a asp-action="MakeAppointment" class="glass-card text-center">
-                        <div class="card-body d-flex flex-column justify-content-center align-items-center">
-                            <i class="fa-solid fa-calendar-plus fs-1 mb-3 icon-glow text-info"></i>
-                            <h4 class="mb-2">Make Appointment</h4>
-                            <span class="text-muted-light">Schedule a session</span>
-                        </div>
-                    </a>
+                    @if (ViewBag.CurrentAppointment == null)
+                    {
+                        <a asp-action="MakeAppointment" class="glass-card text-center">
+                            <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                                <i class="fa-solid fa-calendar-plus fs-1 mb-3 icon-glow text-info"></i>
+                                <h4 class="mb-2">Make Appointment</h4>
+                                <span class="text-muted-light">Schedule a session</span>
+                            </div>
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-action="MyAppointments" class="glass-card text-center" style="border-color: #ffc107;">
+                            <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                                <i class="fa-solid fa-calendar-check fs-1 mb-3 icon-glow text-warning"></i>
+                                <h4 class="mb-2">My Appointments</h4>
+                                <span class="text-muted-light">View booked session</span>
+                            </div>
+                        </a>
+                    }
                 </div>
 
                 <!-- Send MSG To Admin -->
@@ -242,4 +327,5 @@
             </div>
         </div>
     </div>
+    }
 </div>

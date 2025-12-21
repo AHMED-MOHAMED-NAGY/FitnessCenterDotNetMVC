@@ -44,7 +44,8 @@
         margin-left: 50px;
         padding: 35px;
         border-radius: 18px;
-        background: rgba(0,0,0,0.40);
+        background: rgba(0, 0, 0, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.1);
         backdrop-filter: blur(10px);
         box-shadow: 0 8px 25px rgba(0,0,0,0.5);
         color: white;
@@ -145,8 +146,13 @@
 
 <div class="register-box">
 
-    <h2>Kayıt Ol</h2>
-    <h2>Giriş Yap</h2>
+    <div class="text-center mb-4">
+        <div class="d-flex justify-content-center align-items-center mb-2">
+             <i class="fa-solid fa-dumbbell text-primary fs-1 me-2" style="text-shadow: 0 0 15px rgba(13,110,253,0.5);"></i>
+             <h2 class="mb-0 fw-bold text-white" style="text-shadow: 0 0 15px rgba(255,255,255,0.2); letter-spacing: 1px;">FitnessCenter</h2>
+        </div>
+        <p class="text-white-50 small">Create your account</p>
+    </div>
     @if (TempData["err"] != null)
     {
         <div class="text-danger">
@@ -154,26 +160,26 @@
         </div>
     }
     <form asp-action="RegisterResult" asp-controller="Home">
-        <input asp-for= "name" type="text" class="form-control mb-3" placeholder="Adınız" />
+        <input asp-for= "name" type="text" class="form-control mb-3" placeholder="Full Name" />
         <span asp-validation-for="name" class="text-danger"></span>
-        <input asp-for="userName" type="text" class="form-control mb-3" placeholder="UserName" />
+        <input asp-for="userName" type="text" class="form-control mb-3" placeholder="Username" />
         <span asp-validation-for="userName" class="text-danger"></span>
-        <input asp-for ="number" type="tel" class="form-control mb-3" placeholder="Telefon Numarısı" />
+        <input asp-for ="number" type="tel" class="form-control mb-3" placeholder="Phone Number" />
         <span asp-validation-for="number" class="text-danger"></span>
-        <input asp-for="email" type="email" class="form-control mb-3" placeholder="Email Adresi" />
+        <input asp-for="email" type="email" class="form-control mb-3" placeholder="Email Address" />
         <span asp-validation-for="email" class="text-danger"></span>
         <input asp-for="age" type="number" class="form-control mb-3" placeholder="Your Age" />
         <span asp-validation-for="age" class="text-danger"></span>
-        <input asp-for="password" type="password" class="form-control mb-3" placeholder="Şifre" />
+        <input asp-for="password" type="password" class="form-control mb-3" placeholder="Password" />
         <span asp-validation-for="password" class="text-danger"></span>
-        <input asp-for="compare_password" type="password" class="form-control mb-3" placeholder="Şifre Tekrar" />
+        <input asp-for="compare_password" type="password" class="form-control mb-3" placeholder="Confirm Password" />
         <span asp-validation-for="compare_password" class="text-danger"></span>
 
-        <button type="submit" class="register-btn">Kayıt Ol</button>
+        <button type="submit" class="register-btn">Register</button>
 
         <div class="login-link">
-            Zaten hesabın var mı?
-            <a href="/Home/Login">Giriş Yap</a>
+            Already have an account?
+            <a href="/Home/Login">Login</a>
         </div>
 
     </form>

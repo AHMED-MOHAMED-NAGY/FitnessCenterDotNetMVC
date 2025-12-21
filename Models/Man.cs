@@ -8,16 +8,16 @@ public class Man
 {
     public int manId { get; set; }
 
-    [Display(Name = "full name")]
+    [Display(Name = "Full Name")]
     public string name { get; set; }
 
     [Required]
-    [Display(Name = "user name")]
+    [Display(Name = "Username")]
     public string userName { get; set; }
 
     [EmailAddress]
     [Required]
-    [Display(Name ="Email address")]
+    [Display(Name ="Email Address")]
     public string email { get; set; }
 
     [Required]
@@ -27,7 +27,7 @@ public class Man
 
     [Required]
     [NotMapped]
-    [Display(Name = "Compare Password")]
+    [Display(Name = "Confirm Password")]
     [Compare("password")]
     public string compare_password { get; set; }
 
@@ -43,6 +43,6 @@ public class Man
     [Range(5000000000,5999999999 , ErrorMessage ="Phone number must be in this format: 5123456789")]
     public long number { get; set; }
     public Roles whoIam { get; set; }
-    public List<Notification>? notifications;
+    public List<Notification>? notifications { get; set; }
 
 }

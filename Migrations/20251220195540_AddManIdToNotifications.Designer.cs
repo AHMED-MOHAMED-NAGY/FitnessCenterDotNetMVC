@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using fitnessCenter.Models;
@@ -11,9 +12,11 @@ using fitnessCenter.Models;
 namespace fitnessCenter.Migrations
 {
     [DbContext(typeof(FitnessContext))]
-    partial class FitnessContextModelSnapshot : ModelSnapshot
+    [Migration("20251220195540_AddManIdToNotifications")]
+    partial class AddManIdToNotifications
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -30,9 +33,6 @@ namespace fitnessCenter.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("goalId"));
 
-                    b.Property<int?>("UserId")
-                        .HasColumnType("integer");
-
                     b.Property<string>("date")
                         .IsRequired()
                         .HasColumnType("text");
@@ -44,9 +44,6 @@ namespace fitnessCenter.Migrations
                         .HasColumnType("boolean");
 
                     b.HasKey("goalId");
-
-                    b.HasIndex("UserId")
-                        .IsUnique();
 
                     b.ToTable("dailyGoals");
                 });
@@ -121,9 +118,6 @@ namespace fitnessCenter.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("notId"));
 
-                    b.Property<bool>("IsRead")
-                        .HasColumnType("boolean");
-
                     b.Property<int>("ManId")
                         .HasColumnType("integer");
 
@@ -146,41 +140,6 @@ namespace fitnessCenter.Migrations
                     b.ToTable("notifications");
                 });
 
-            modelBuilder.Entity("fitnessCenter.Models.Appointment", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("AppointmentDate")
-                        .HasColumnType("text");
-
-                    b.Property<int>("CotchId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ExerciseId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CotchId");
-
-                    b.HasIndex("ExerciseId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("appointments");
-                });
-
             modelBuilder.Entity("Admin", b =>
                 {
                     b.HasBaseType("Man");
@@ -192,16 +151,11 @@ namespace fitnessCenter.Migrations
                 {
                     b.HasBaseType("Man");
 
-                    b.Property<int?>("ExerciseId")
-                        .HasColumnType("integer");
-
                     b.PrimitiveCollection<List<string>>("available_times")
                         .HasColumnType("text[]");
 
                     b.Property<string>("cotch_status")
                         .HasColumnType("text");
-
-                    b.HasIndex("ExerciseId");
 
                     b.ToTable("Cotches", (string)null);
                 });
@@ -213,6 +167,9 @@ namespace fitnessCenter.Migrations
                     b.Property<int?>("CotchId")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("dailyGoalgoalId")
+                        .HasColumnType("integer");
+
                     b.Property<int?>("exerciseexId")
                         .HasColumnType("integer");
 
@@ -221,18 +178,11 @@ namespace fitnessCenter.Migrations
 
                     b.HasIndex("CotchId");
 
+                    b.HasIndex("dailyGoalgoalId");
+
                     b.HasIndex("exerciseexId");
 
                     b.ToTable("Users", (string)null);
-                });
-
-            modelBuilder.Entity("DailyGoal", b =>
-                {
-                    b.HasOne("User", "User")
-                        .WithOne("dailyGoal")
-                        .HasForeignKey("DailyGoal", "UserId");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Notification", b =>
@@ -246,33 +196,6 @@ namespace fitnessCenter.Migrations
                     b.Navigation("Man");
                 });
 
-            modelBuilder.Entity("fitnessCenter.Models.Appointment", b =>
-                {
-                    b.HasOne("Cotch", "Cotch")
-                        .WithMany()
-                        .HasForeignKey("CotchId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Exercise", "Exercise")
-                        .WithMany()
-                        .HasForeignKey("ExerciseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Cotch");
-
-                    b.Navigation("Exercise");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Admin", b =>
                 {
                     b.HasOne("Man", null)
@@ -284,17 +207,11 @@ namespace fitnessCenter.Migrations
 
             modelBuilder.Entity("Cotch", b =>
                 {
-                    b.HasOne("Exercise", "Exercise")
-                        .WithMany()
-                        .HasForeignKey("ExerciseId");
-
                     b.HasOne("Man", null)
                         .WithOne()
                         .HasForeignKey("Cotch", "manId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Exercise");
                 });
 
             modelBuilder.Entity("User", b =>
@@ -302,6 +219,10 @@ namespace fitnessCenter.Migrations
                     b.HasOne("Cotch", "cotch")
                         .WithMany("users_that_i_train")
                         .HasForeignKey("CotchId");
+
+                    b.HasOne("DailyGoal", "dailyGoal")
+                        .WithMany()
+                        .HasForeignKey("dailyGoalgoalId");
 
                     b.HasOne("Exercise", "exercise")
                         .WithMany()
@@ -315,6 +236,8 @@ namespace fitnessCenter.Migrations
 
                     b.Navigation("cotch");
 
+                    b.Navigation("dailyGoal");
+
                     b.Navigation("exercise");
                 });
 
@@ -326,11 +249,6 @@ namespace fitnessCenter.Migrations
             modelBuilder.Entity("Cotch", b =>
                 {
                     b.Navigation("users_that_i_train");
-                });
-
-            modelBuilder.Entity("User", b =>
-                {
-                    b.Navigation("dailyGoal");
                 });
 #pragma warning restore 612, 618
         }

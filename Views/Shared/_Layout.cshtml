@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -8,37 +9,85 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/fitnessCenter.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-transparent border-bottom mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">fitnessCenter</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+        <nav class="navbar navbar-expand-lg navbar-dark fixed-top glass-navbar">
+            <div class="container">
+                @{
+                    string restrictedController = "Home";
+                    string restrictedAction = "Index";
+                    string role = Context.Session.GetString("Role");
+                    if (role == "user") { restrictedController = "User"; }
+                    else if (role == "cotch") { restrictedController = "Cotch"; }
+                    else if (role == "admin") { restrictedController = "Admin"; }
+                }
+                <a class="navbar-brand fw-bold fs-4" asp-area="" asp-controller="@restrictedController" asp-action="@restrictedAction">
+                    <i class="fa-solid fa-dumbbell text-primary me-2"></i>FitnessCenter
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                    <ul class="navbar-nav ms-auto">
-                        @if (ViewContext.RouteData.Values["action"].ToString() != "Login" && ViewContext.RouteData.Values["action"].ToString() != "Register" && ViewContext.RouteData.Values["action"].ToString() != "ForgotPassword")
+                    <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-3">
+                        @if (role == "user")
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Login">Login</a>
+                                <a class="nav-link" asp-controller="User" asp-action="PlanSelection"><i class="fa-solid fa-robot me-1"></i>AI Plan</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Register">Register</a>
+                                <a class="nav-link" asp-controller="User" asp-action="MakeAppointment"><i class="fa-solid fa-calendar-check me-1"></i>Book Session</a>
                             </li>
-                        }else{
+                        }
+                        else if (role == "cotch")
+                        {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Logout">Logout</a>
+                                <a class="nav-link" asp-controller="Cotch" asp-action="MyStudents"><i class="fa-solid fa-users me-1"></i>My Students</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Cotch" asp-action="Edit" asp-route-id="@Context.Session.GetInt32("UserId")"><i class="fa-solid fa-clock me-1"></i>Available Times</a>
+                            </li>
+                             <li class="nav-item">
+                                <a class="nav-link" asp-controller="Cotch" asp-action="SendToAdmin"><i class="fa-solid fa-envelope me-1"></i>Contact Admin</a>
+                            </li>
+                        }
+                        else if (role == "admin")
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Admin" asp-action="Applications"><i class="fa-solid fa-file-signature me-1"></i>Apps</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Manage</a>
+                                <ul class="dropdown-menu glass-dropdown">
+                                    <li><a class="dropdown-item text-white" asp-controller="Admin" asp-action="ListUsers">Users</a></li>
+                                    <li><a class="dropdown-item text-white" asp-controller="Admin" asp-action="ListCotches">Coaches</a></li>
+                                    <li><a class="dropdown-item text-white" asp-controller="Admin" asp-action="ListAdmins">Admins</a></li>
+                                    <li><hr class="dropdown-divider bg-white opacity-25"></li>
+                                    <li><a class="dropdown-item text-white" asp-controller="Admin" asp-action="Exercises">Exercises</a></li>
+                                </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Admin" asp-action="Appointments"><i class="fa-solid fa-calendar-days me-1"></i>Appointments</a>
+                            </li>
+                        }
+                    </ul>
+                    <ul class="navbar-nav align-items-center">
+                        @if (Context.Session.GetInt32("UserId") != null)
+                        {
+                             <li class="nav-item me-3">
+                                <a class="nav-link" asp-controller="Home" asp-action="Notifications">
+                                    <i class="fa-solid fa-bell me-1"></i>Notifications
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link btn btn-glass-sm px-4 text-white" asp-controller="Home" asp-action="Logout">Logout</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Home" asp-action="Login">Login</a>
                             </li>
                         }
                     </ul>
@@ -46,11 +95,9 @@
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
+    <main role="main" class="pb-3">
+        @RenderBody()
+    </main>
 
     <footer class="border-top footer text-muted">
         <div class="container">
@@ -62,21 +109,55 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
     <style> 
-        .navbar 
-        {
-            background-color: rgba(0, 0, 0, 0.35) !important;
-            backdrop-filter: blur(6px);
+        body {
+            padding-top: 80px; /* Space for fixed navbar */
+        }
+        
+        .glass-navbar {
+            background: rgba(0, 0, 0, 0.8) !important;
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px 0;
+            transition: all 0.3s;
         }
 
-        .navbar a, .navbar-brand 
-        {
-            color: #ffffff !important;
-            font-weight: 600;
+        .navbar-brand {
+            letter-spacing: 1px;
+            color: white !important;
         }
 
-        .navbar a:hover 
-        {
-            color: #00a2ff !important;
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8) !important;
+            font-weight: 500;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: #0d6efd !important;
+            transform: translateY(-2px);
+        }
+
+        .btn-glass-sm {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+        }
+        
+        .btn-glass-sm:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Dropdown Glass */
+        .glass-dropdown {
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .dropdown-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #0d6efd !important;
         }
     </style>
 </body>

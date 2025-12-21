@@ -1,0 +1,79 @@
+@model dynamic
+
+@{
+    ViewData["Title"] = "Contact Admins";
+}
+
+<style>
+    body {
+        background: url('/images/login.jpg') no-repeat center center fixed;
+        background-size: cover;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: white;
+    }
+    
+    .glass-panel {
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        padding: 40px;
+        color: white;
+    }
+
+    .form-control {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
+    }
+
+    .form-control:focus {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: #dc3545;
+        color: white;
+        box-shadow: 0 0 10px rgba(220, 53, 69, 0.5);
+    }
+    
+    .alert-glass-warning {
+        background: rgba(255, 193, 7, 0.2);
+        border: 1px solid rgba(255, 193, 7, 0.4);
+        color: #ffc107;
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="glass-panel">
+                <div class="d-flex align-items-center mb-4 border-bottom border-secondary pb-3">
+                    <i class="fa-solid fa-shield-halved fs-2 me-3 text-danger"></i>
+                    <h2 class="mb-0">Contact Administration</h2>
+                </div>
+
+                <div class="alert alert-glass-warning mb-4 rounded-3 d-flex align-items-center">
+                    <i class="bi bi-info-circle me-3 fs-4"></i>
+                    <div>This message will be sent to <strong>all</strong> system administrators.</div>
+                </div>
+
+                <form asp-action="SendToAdminResult" method="post">
+                    <div class="mb-4">
+                        <label for="title" class="form-label fw-bold">Subject</label>
+                        <input type="text" class="form-control" id="title" name="title" required placeholder="e.g. Account Issue, Complaint">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="msj" class="form-label fw-bold">Message</label>
+                        <textarea class="form-control" id="msj" name="msj" rows="5" required placeholder="Describe your issue..."></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-3 mt-4">
+                        <a asp-action="Index" class="btn btn-outline-light px-4">Cancel</a>
+                        <button type="submit" class="btn btn-danger px-5 fw-bold"><i class="bi bi-send me-2"></i>Send</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

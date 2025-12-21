@@ -1,0 +1,180 @@
+@model IEnumerable<User>
+
+@{
+    ViewData["Title"] = "My Students";
+}
+
+<style>
+    body {
+        background: url('/images/indexBackground.jpg') no-repeat center center fixed;
+        background-size: cover;
+        background-position: center;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: white;
+    }
+
+    .glass-panel {
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        padding: 30px;
+    }
+
+    .glass-table {
+        width: 100%;
+        color: white;
+        border-collapse: separate;
+        border-spacing: 0 10px;
+    }
+
+    .glass-table thead th {
+        border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        padding: 15px;
+        text-transform: uppercase;
+        font-size: 0.9rem;
+        letter-spacing: 1px;
+        color: rgba(255,255,255,0.7);
+    }
+
+    .glass-table tbody tr {
+        background: rgba(255, 255, 255, 0.05);
+        transition: transform 0.2s, background 0.2s;
+    }
+
+    .glass-table tbody tr:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transform: scale(1.01);
+    }
+
+    .glass-table td {
+        padding: 15px;
+        vertical-align: middle;
+    }
+    
+    .glass-table td:first-child {
+        border-top-left-radius: 10px;
+        border-bottom-left-radius: 10px;
+    }
+
+    .glass-table td:last-child {
+        border-top-right-radius: 10px;
+        border-bottom-right-radius: 10px;
+    }
+
+    .badge-status {
+        padding: 5px 12px;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .btn-action {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 6px 15px;
+        border-radius: 20px;
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: all 0.3s;
+    }
+
+    .btn-action:hover {
+        background: #00a2ff;
+        border-color: #00a2ff;
+        color: white;
+        box-shadow: 0 0 10px rgba(0, 162, 255, 0.5);
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="glass-panel">
+        <div class="d-flex justify-content-between align-items-center mb-4 border-bottom border-secondary pb-3">
+             <div class="d-flex align-items-center">
+                <i class="fa-solid fa-users fs-2 me-3 text-info"></i>
+                <h2 class="mb-0">My Students</h2>
+            </div>
+            
+            <a asp-action="Index" class="btn btn-outline-light btn-sm rounded-pill px-3">
+                <i class="fa-solid fa-arrow-left me-2"></i>Back to Dashboard
+            </a>
+        </div>
+        
+        @if (TempData["msg"] != null)
+        {
+            <div class="alert alert-success bg-transparent border-success text-success mb-4">
+                <i class="fa-solid fa-check-circle me-2"></i>@TempData["msg"]
+            </div>
+        }
+        @if (TempData["err"] != null)
+        {
+            <div class="alert alert-danger bg-transparent border-danger text-danger mb-4">
+                <i class="fa-solid fa-circle-exclamation me-2"></i>@TempData["err"]
+            </div>
+        }
+
+        <div class="table-responsive">
+            <table class="glass-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Status</th>
+                        <th>Age</th>
+                        <th>Daily Goal</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="fw-bold">@item.name</td>
+                                <td>
+                                    <span class="badge-status @(item.subscribeStatus == "Active" ? "bg-success" : "bg-warning text-dark")">
+                                        @(item.subscribeStatus ?? "Unknown")
+                                    </span>
+                                </td>
+                                <td>@item.age</td>
+                                <td>
+                                    @if(item.dailyGoal != null && !string.IsNullOrEmpty(item.dailyGoal.goal))
+                                    {
+                                        <div class="d-flex align-items-center @(item.dailyGoal.status ? "text-success" : "text-warning")">
+                                            <i class="fa-solid @(item.dailyGoal.status ? "fa-check-circle" : "fa-bullseye") me-2"></i>
+                                            <div>
+                                                <div class="fw-bold" style="font-size:0.9rem;">@item.dailyGoal.goal</div>
+                                                <div class="opacity-50" style="font-size: 0.7rem;">@item.dailyGoal.date</div>
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-white-50 small fst-italic">No goal set</span>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    <a asp-action="SendNotification" asp-route-id="@item.manId" class="btn-action">
+                                        <i class="fa-solid fa-paper-plane me-1"></i> Message
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center py-5 text-white-50">
+                                <i class="fa-solid fa-user-slash fs-1 mb-3 opacity-50"></i>
+                                <p>You have no students assigned yet.</p>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

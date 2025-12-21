@@ -1,0 +1,86 @@
+@model DailyGoal
+
+@{
+    ViewData["Title"] = "Set Daily Goal";
+}
+
+<style>
+    body {
+        background: url('/images/indexBackground.jpg') no-repeat center center fixed;
+        background-size: cover;
+        background-position: center;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: white;
+    }
+    
+    .glass-panel {
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        padding: 40px;
+        color: white;
+    }
+
+    .form-control {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
+        font-size: 1.1rem;
+        padding: 15px;
+        border-radius: 12px;
+    }
+
+    .form-control:focus {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: #28a745;
+        color: white;
+        box-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
+    }
+    
+    .target-icon {
+        font-size: 3.5rem;
+        margin-bottom: 20px;
+        background: -webkit-linear-gradient(45deg, #28a745, #85e085);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="glass-panel text-center">
+                <i class="fa-solid fa-bullseye target-icon"></i>
+                <h2 class="mb-2 fw-bold">Set Today's Goal</h2>
+                <p class="text-white-50 mb-4">Define your objective for today. Your coach will see this.</p>
+
+                @if(Model != null)
+                {
+                    <div class="alert alert-success bg-transparent border-success text-success mb-4 text-start">
+                        <i class="fa-solid fa-check me-2"></i> Current Goal: <strong>@Model.goal</strong>
+                        <div class="small mt-1 opacity-75">Date: @Model.date</div>
+                    </div>
+                }
+
+                <form asp-action="SetDailyGoalResult" method="post">
+                    <div class="mb-4 text-start">
+                        <label for="goal" class="form-label fw-bold small text-uppercase letter-spacing-1">Your Goal</label>
+                        <input type="text" class="form-control" id="goal" name="goal" required 
+                               placeholder="e.g. Run 5km, Do 100 pushups..." 
+                               value="@(Model?.goal)" autofocus>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success btn-lg rounded-pill shadow-sm fw-bold">
+                            <i class="fa-solid fa-circle-check me-2"></i>Set Goal
+                        </button>
+                        <a asp-action="Index" class="btn btn-outline-light rounded-pill mt-2">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

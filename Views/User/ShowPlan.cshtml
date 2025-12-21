@@ -1,57 +1,78 @@
-@model fitnessCenter.Models.ShowPlanViewModel
+@model ShowPlanViewModel
+
 @{
-    ViewData["Title"] = "Your Transformation Plan";
+    ViewData["Title"] = "Your AI Plan";
 }
 
-<div class="container py-5">
-    <div class="text-center mb-5">
-        <h1 class="display-4 fw-bold text-success">Your @Model.Duration-Month @Model.PlanType Plan</h1>
-        <p class="lead text-muted">AI-Generated personalized roadmap to your goal.</p>
-    </div>
+<style>
+    body {
+        background: url('/images/login.jpg') no-repeat center center fixed;
+        background-size: cover;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: white;
+    }
+    
+    .glass-panel {
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        padding: 40px;
+        color: white;
+    }
 
-    <!-- Transformation Visualization -->
-    <div class="row mb-5 justify-content-center">
-        <div class="col-md-5 text-center">
-            <h4 class="mb-3">Start</h4>
-            <div class="card shadow-sm">
-                <img src="@Model.BeforeImageUrl" class="card-img-top rounded" alt="Current Self" style="max-height: 400px; object-fit: cover;">
-            </div>
-        </div>
-        <div class="col-md-1 d-flex align-items-center justify-content-center">
-            <i class="bi bi-arrow-right fs-1 text-muted d-none d-md-block"></i>
-            <i class="bi bi-arrow-down fs-1 text-muted d-block d-md-none my-3"></i>
-        </div>
-        <div class="col-md-5 text-center">
-            <h4 class="mb-3 text-primary">Goal (Projected)</h4>
-            <div class="card shadow-lg border-primary">
-                <img src="@Model.AfterImageUrl" class="card-img-top rounded" alt="Future Self" style="max-height: 400px; object-fit: cover;">
-            </div>
-        </div>
-    </div>
+    .plan-content {
+        white-space: pre-wrap;
+        line-height: 1.6;
+    }
+    
+    .img-fluid {
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+</style>
 
-    <!-- Detailed Plan -->
-    <div class="row justify-content-center">
-        <div class="col-lg-10">
-            <div class="card shadow border-0">
-                <div class="card-header bg-dark text-white p-3">
-                    <h3 class="h4 mb-0"><i class="bi bi-file-text me-2"></i>Detailed Strategy</h3>
+<div class="container mt-5">
+    <div class="glass-panel">
+        <div class="d-flex align-items-center mb-5 border-bottom border-secondary pb-3">
+            <i class="fa-solid fa-file-medical-alt fs-2 me-3 text-info"></i>
+            <h2 class="mb-0">Your Personalized Plan</h2>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8">
+                <h4 class="text-info mb-3">Plan Details</h4>
+                <div class="plan-content p-3 rounded" style="background: rgba(255,255,255,0.05);">
+                    @if (Model != null)
+                    {
+                        @Model.PlanText
+                    }
+                    else
+                    {
+                        <span>No plan data available.</span>
+                    }
                 </div>
-                <div class="card-body p-4 bg-light">
-                    <div class="markdown-content">
-                        <!-- We use a simple whitespace pre-wrap for now, or a markdown library if available. 
-                             Since no library is guaranteed, we'll display as pre-formatted text styled pleasantly. -->
-                        <pre style="white-space: pre-wrap; font-family: inherit; font-size: 1rem;">@Model.PlanText</pre>
+            </div>
+            <div class="col-lg-4 mt-4 mt-lg-0">
+                <h4 class="text-success mb-3">Projected Result</h4>
+                 @if (Model != null && !string.IsNullOrEmpty(Model.AfterImageUrl))
+                {
+                    <img src="@Model.AfterImageUrl" class="img-fluid border border-secondary" alt="Projected Result" />
+                }
+                else
+                {
+                    <div class="p-5 text-center rounded border border-secondary" style="background: rgba(255,255,255,0.05);">
+                        <i class="fa-solid fa-image fs-1 mb-3 opacity-50"></i>
+                        <p>No visualization available</p>
                     </div>
-                </div>
+                }
             </div>
         </div>
-    </div>
 
-    <!-- Action Buttons -->
-    <div class="row mt-5">
-        <div class="col-12 text-center">
-            <a asp-action="Index" asp-controller="User" class="btn btn-outline-primary btn-lg rounded-pill px-5 me-2">Back to Dashboard</a>
-            <a asp-action="PlanSelection" asp-route-type="@Model.PlanType" class="btn btn-primary btn-lg rounded-pill px-5">Regenerate</a>
+        <div class="mt-5 text-center">
+            <a asp-action="Index" class="btn btn-outline-light px-5 rounded-pill">Back to Dashboard</a>
         </div>
     </div>
 </div>

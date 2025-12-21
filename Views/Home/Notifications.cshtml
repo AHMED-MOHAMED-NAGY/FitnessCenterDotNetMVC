@@ -1,0 +1,105 @@
+@model Man
+
+@{
+    ViewData["Title"] = "My Notifications";
+    string backController = "Home";
+    string backAction = "Index";
+
+    if (Model.whoIam == Roles.admin)
+    {
+        backController = "Admin";
+    }
+    else if (Model.whoIam == Roles.cotch)
+    {
+        backController = "Cotch";
+    }
+    else if (Model.whoIam == Roles.user)
+    {
+        backController = "User";
+    }
+}
+
+<style>
+    body {
+        background: url('/images/indexBackground.jpg') no-repeat center center fixed;
+        background-size: cover;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: white;
+    }
+    .glass-panel {
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        padding: 30px;
+        color: white;
+        transition: all 0.3s ease;
+    }
+    .glass-list-item {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        margin-bottom: 15px;
+        padding: 20px;
+        transition: transform 0.2s, background 0.2s;
+    }
+    .glass-list-item:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    .glass-badge-new {
+        background: rgba(13, 110, 253, 0.8); /* Bootstrap Primary with opacity */
+        box-shadow: 0 0 10px rgba(13, 110, 253, 0.5);
+    }
+    .text-muted-light {
+        color: rgba(255, 255, 255, 0.6) !important;
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="glass-panel">
+        <div class="d-flex justify-content-between align-items-center mb-4 border-bottom border-secondary pb-3">
+             <div class="d-flex align-items-center">
+                <i class="fa-solid fa-bell fs-2 me-3 text-warning"></i>
+                <h2 class="mb-0">Notifications</h2>
+            </div>
+            
+            <a asp-controller="@backController" asp-action="@backAction" class="btn btn-outline-light btn-sm rounded-pill px-3">
+                <i class="fa-solid fa-arrow-left me-2"></i>Back to Dashboard
+            </a>
+        </div>
+
+        <div>
+            @if (Model.notifications != null && Model.notifications.Any())
+            {
+                <div class="list-group list-group-flush bg-transparent">
+                    @foreach (var notification in Model.notifications)
+                    {
+                        <div class="glass-list-item d-flex justify-content-between align-items-start">
+                            <div class="ms-2 me-auto">
+                                <div class="fw-bold text-info mb-1" style="font-size: 1.1rem;">
+                                    <i class="fa-solid fa-circle-info me-2 small"></i>@notification.title
+                                </div>
+                                <span class="text-white-50">@notification.msj</span>
+                            </div>
+                            @if (!notification.IsRead || (ViewBag.NewlyReadIds != null && ((HashSet<int>)ViewBag.NewlyReadIds).Contains(notification.notId)))
+                            {
+                                <span class="badge glass-badge-new rounded-pill">New</span>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5 text-muted-light">
+                    <i class="fa-solid fa-check-circle fs-1 mb-3 opacity-50 text-success"></i>
+                    <p class="fs-5">You have no new notifications.</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>

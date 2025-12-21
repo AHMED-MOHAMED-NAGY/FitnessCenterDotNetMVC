@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using fitnessCenter.Models;
@@ -11,9 +12,11 @@ using fitnessCenter.Models;
 namespace fitnessCenter.Migrations
 {
     [DbContext(typeof(FitnessContext))]
-    partial class FitnessContextModelSnapshot : ModelSnapshot
+    [Migration("20251221063013_AddNotificationReadStatus")]
+    partial class AddNotificationReadStatus
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -30,9 +33,6 @@ namespace fitnessCenter.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("goalId"));
 
-                    b.Property<int?>("UserId")
-                        .HasColumnType("integer");
-
                     b.Property<string>("date")
                         .IsRequired()
                         .HasColumnType("text");
@@ -44,9 +44,6 @@ namespace fitnessCenter.Migrations
                         .HasColumnType("boolean");
 
                     b.HasKey("goalId");
-
-                    b.HasIndex("UserId")
-                        .IsUnique();
 
                     b.ToTable("dailyGoals");
                 });
@@ -213,6 +210,9 @@ namespace fitnessCenter.Migrations
                     b.Property<int?>("CotchId")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("dailyGoalgoalId")
+                        .HasColumnType("integer");
+
                     b.Property<int?>("exerciseexId")
                         .HasColumnType("integer");
 
@@ -221,18 +221,11 @@ namespace fitnessCenter.Migrations
 
                     b.HasIndex("CotchId");
 
+                    b.HasIndex("dailyGoalgoalId");
+
                     b.HasIndex("exerciseexId");
 
                     b.ToTable("Users", (string)null);
-                });
-
-            modelBuilder.Entity("DailyGoal", b =>
-                {
-                    b.HasOne("User", "User")
-                        .WithOne("dailyGoal")
-                        .HasForeignKey("DailyGoal", "UserId");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Notification", b =>
@@ -303,6 +296,10 @@ namespace fitnessCenter.Migrations
                         .WithMany("users_that_i_train")
                         .HasForeignKey("CotchId");
 
+                    b.HasOne("DailyGoal", "dailyGoal")
+                        .WithMany()
+                        .HasForeignKey("dailyGoalgoalId");
+
                     b.HasOne("Exercise", "exercise")
                         .WithMany()
                         .HasForeignKey("exerciseexId");
@@ -315,6 +312,8 @@ namespace fitnessCenter.Migrations
 
                     b.Navigation("cotch");
 
+                    b.Navigation("dailyGoal");
+
                     b.Navigation("exercise");
                 });
 
@@ -326,11 +325,6 @@ namespace fitnessCenter.Migrations
             modelBuilder.Entity("Cotch", b =>
                 {
                     b.Navigation("users_that_i_train");
-                });
-
-            modelBuilder.Entity("User", b =>
-                {
-                    b.Navigation("dailyGoal");
                 });
 #pragma warning restore 612, 618
         }

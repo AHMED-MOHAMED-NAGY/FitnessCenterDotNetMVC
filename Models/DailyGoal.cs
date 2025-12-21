@@ -11,19 +11,21 @@ public class DailyGoal
     public string date { get; set; }
 
 
-    //public int UserId { get; set; }
-    //public User User { get; set; }
+    public int? UserId { get; set; }
+    public User User { get; set; }
 
 
     // for database
-    DailyGoal() 
+    public DailyGoal() 
     {
-        //status = false;
-        //goal = null;
+        status = false;
+        date = DateTime.Now.ToString("yyyy-MM-dd");
     }
-    // DailyGoal (string? goal)
-    // {
-    //     this.goal = goal;
-    //     status = false;
-    // }
+
+    public DailyGoal(string goal)
+    {
+        this.goal = goal;
+        status = false;
+        date = DateTime.Now.ToString("yyyy-MM-dd");
+    }
 }

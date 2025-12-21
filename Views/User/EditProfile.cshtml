@@ -1,74 +1,108 @@
 ﻿@model User
 
 @{
-    ViewData["Title"] = "EditProfile";
+    ViewData["Title"] = "Edit Profile";
 }
 
-<h1>EditProfile</h1>
+<style>
+    body {
+        background: url('/images/login.jpg') no-repeat center center fixed;
+        background-size: cover;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: white;
+    }
+    
+    .glass-panel {
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        padding: 40px;
+        color: white;
+    }
 
-<h4>User</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="EditProfileResult">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="subscribeStatus" class="control-label"></label>
-                <input asp-for="subscribeStatus" class="form-control"/>
-                <span asp-validation-for="subscribeStatus" class="text-danger"></span>
+    .form-control {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
+    }
+
+    .form-control:focus {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: #4da3ff;
+        color: white;
+        box-shadow: 0 0 10px rgba(77,163,255,0.5);
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="glass-panel">
+                <div class="d-flex align-items-center mb-4 border-bottom border-secondary pb-3">
+                    <i class="fa-solid fa-user-pen fs-2 me-3 text-warning"></i>
+                    <h2 class="mb-0">Edit Profile</h2>
+                </div>
+                
+                 @if (TempData["err"] != null)
+                {
+                    <div class="alert alert-danger">
+                        @TempData["err"]
+                    </div>
+                }
+
+                <form asp-action="EditProfileResult" method="post">
+                    <input type="hidden" asp-for="manId" />
+                    <input type="hidden" asp-for="whoIam" />
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="name" class="form-label fw-bold">Name</label>
+                            <input asp-for="name" class="form-control" />
+                            <span asp-validation-for="name" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="userName" class="form-label fw-bold">Username</label>
+                            <input asp-for="userName" class="form-control" readonly />
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="email" class="form-label fw-bold">Email</label>
+                        <input asp-for="email" class="form-control" />
+                        <span asp-validation-for="email" class="text-danger small"></span>
+                    </div>
+
+                    <div class="row">
+                         <div class="col-md-4 mb-3">
+                            <label asp-for="age" class="form-label fw-bold">Age</label>
+                            <input asp-for="age" class="form-control" />
+                            <span asp-validation-for="age" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="wight" class="form-label fw-bold">Weight (kg)</label>
+                            <input asp-for="wight" class="form-control" />
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="boy" class="form-label fw-bold">Height (cm)</label>
+                            <input asp-for="boy" class="form-control" />
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label asp-for="number" class="form-label fw-bold">Phone Number</label>
+                        <input asp-for="number" class="form-control" />
+                        <span asp-validation-for="number" class="text-danger small"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-3 mt-4">
+                        <a asp-action="Index" class="btn btn-outline-light px-4">Cancel</a>
+                        <button type="submit" class="btn btn-warning px-5 fw-bold">Save Changes</button>
+                    </div>
+                </form>
             </div>
-            <input type="hidden" asp-for="manId" />
-            <input type="hidden" asp-for="passwordHash" />
-            <input type="hidden" asp-for="whoIam" />
-            <div class="form-group">
-                <label asp-for="name" class="control-label"></label>
-                <input asp-for="name" class="form-control" />
-                <span asp-validation-for="name" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="userName" class="control-label"></label>
-                <input asp-for="userName" class="form-control" />
-                <span asp-validation-for="userName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="email" class="control-label"></label>
-                <input asp-for="email" class="form-control" />
-                <span asp-validation-for="email" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <a asp-controller="Home" asp-action="resetPassword">Change Password</a>
-            </div>
-            <div class="form-group">
-                <label asp-for="boy" class="control-label"></label>
-                <input asp-for="boy" class="form-control" />
-                <span asp-validation-for="boy" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="wight" class="control-label"></label>
-                <input asp-for="wight" class="form-control" />
-                <span asp-validation-for="wight" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="age" class="control-label"></label>
-                <input asp-for="age" class="form-control" />
-                <span asp-validation-for="age" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="number" class="control-label"></label>
-                <input asp-for="number" class="form-control" />
-                <span asp-validation-for="number" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}

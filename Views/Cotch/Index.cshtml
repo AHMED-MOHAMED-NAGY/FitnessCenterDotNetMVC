@@ -1,95 +1,155 @@
-﻿@model IEnumerable<Cotch>
+﻿@model Cotch
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Coach Dashboard";
 }
 
-<h1>Index</h1>
+<style>
+    body {
+        background: url('/images/indexBackground.jpg') no-repeat center center fixed;
+        background-size: cover;
+        background-position: center;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: white;
+    }
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.cotch_status)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.available_times)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.userName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.email)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.passwordHash)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.boy)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.wight)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.age)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.number)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.whoIam)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.cotch_status)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.available_times)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.userName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.email)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.passwordHash)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.boy)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.wight)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.age)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.number)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.whoIam)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.manId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.manId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.manId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    /* Glass Effect */
+    .glass-panel {
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        padding: 20px;
+        transition: all 0.3s ease;
+    }
+
+    .glass-card {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 15px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        color: white;
+        display: block;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .glass-card:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        color: white;
+        border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    .glass-card .card-body {
+        padding: 2rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        height: 100%;
+    }
+
+    .icon-glow {
+        text-shadow: 0 0 15px rgba(255,255,255,0.6);
+        transition: transform 0.3s;
+    }
+    
+    .glass-card:hover .icon-glow {
+        transform: scale(1.1);
+    }
+
+    .notifications-badge {
+        position: relative;
+        text-decoration: none;
+        color: white;
+        font-size: 1.5rem;
+        transition: color 0.3s;
+    }
+    
+    .notifications-badge:hover {
+        color: #ffc107;
+    }
+
+    .btn-glass {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 8px 20px;
+        border-radius: 30px;
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+
+    .btn-glass:hover {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+    }
+</style>
+
+<div class="container py-5">
+    
+    <!-- Header -->
+    <div class="glass-panel mb-5 d-flex justify-content-between align-items-center">
+        <a asp-action="Edit" asp-route-id="@Model.manId" class="d-flex align-items-center text-decoration-none text-white" style="transition: transform 0.2s;" onmouseover="this.style.transform='translateX(5px)'" onmouseout="this.style.transform='translateX(0)'">
+            <div class="rounded-circle bg-white text-dark d-flex align-items-center justify-content-center me-3" style="width: 60px; height: 60px; font-size: 1.8rem;">
+                <i class="fa-solid fa-user-tie"></i>
+            </div>
+            <div>
+                <h3 class="mb-0 fw-bold">Coach @Model.name</h3>
+                <small class="text-white-50">Edit Profile <i class="fa-solid fa-pen-to-square ms-1"></i></small>
+            </div>
+        </a>
+        
+        <div class="d-flex align-items-center gap-4">
+             <!-- Notifications Link -->
+            <a asp-controller="Home" asp-action="Notifications" class="notifications-badge" title="My Notifications">
+                <i class="fa-solid fa-bell"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- Dashboard Grid -->
+    <div class="row g-4">
+        
+        <!-- Train With Me (My Students) -->
+        <div class="col-md-6 col-lg-4">
+            <a asp-action="MyStudents" class="glass-card">
+                <div class="card-body">
+                    <i class="fa-solid fa-users fs-1 mb-3 icon-glow text-info"></i>
+                    <h4 class="fw-bold">Train With Me</h4>
+                    <span class="text-white-50">Manage Students</span>
+                </div>
+            </a>
+        </div>
+
+        <!-- My Available Time -->
+        <div class="col-md-6 col-lg-4">
+            <a asp-action="Edit" asp-route-id="@Model.manId" class="glass-card">
+                <div class="card-body">
+                    <i class="fa-solid fa-clock fs-1 mb-3 icon-glow text-warning"></i>
+                    <h4 class="fw-bold">Edit Profile and Available Time</h4>
+                    <span class="text-white-50">Update Availability</span>
+                </div>
+            </a>
+        </div>
+
+        <!-- Send MSG To Admin -->
+        <div class="col-md-6 col-lg-4">
+            <a asp-action="SendToAdmin" class="glass-card">
+                <div class="card-body">
+                    <i class="fa-solid fa-envelope-open-text fs-1 mb-3 icon-glow text-danger"></i>
+                    <h4 class="fw-bold">Contact Admin</h4>
+                    <span class="text-white-50">Send Message</span>
+                </div>
+            </a>
+        </div>
+        
+    </div>
+</div>

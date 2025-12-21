@@ -12,6 +12,7 @@ namespace fitnessCenter.Models
         public DbSet<Cotch> cotches { get; set; }
         public DbSet<Exercise> exercises { get; set; }
         public DbSet<User> users { get; set; }
+        public DbSet<Appointment> appointments { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -19,10 +20,10 @@ namespace fitnessCenter.Models
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            //modelBuilder.Entity<User>()
-            //    .HasOne(u => u.dailyGoal)
-            //    .WithOne(d => d.User)
-            //    .HasForeignKey<DailyGoal>(d => d.UserId);
+            modelBuilder.Entity<User>()
+                .HasOne(u => u.dailyGoal)
+                .WithOne(d => d.User)
+                .HasForeignKey<DailyGoal>(d => d.UserId);
             modelBuilder.Entity<Admin>().ToTable("Admins");
             modelBuilder.Entity<User>().ToTable("Users");
             modelBuilder.Entity<Cotch>().ToTable("Cotches");

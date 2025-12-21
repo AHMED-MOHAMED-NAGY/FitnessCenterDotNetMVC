@@ -1,68 +1,175 @@
+@model dynamic
+
 @{
-    ViewData["Title"] = "Make Advertisement";
+    ViewData["Title"] = "Make Appointment";
 }
 
-<div class="container py-5">
+<style>
+    body {
+        background: url('/images/login.jpg') no-repeat center center fixed;
+        background-size: cover;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: white;
+    }
+    
+    .glass-panel {
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        padding: 40px;
+        color: white;
+    }
+
+    .form-control, .form-select {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
+    }
+
+    .form-control:focus, .form-select:focus {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: #4da3ff;
+        color: white;
+        box-shadow: 0 0 10px rgba(77,163,255,0.5);
+    }
+    
+    .text-muted {
+        color: rgba(255, 255, 255, 0.6) !important;
+    }
+
+    /* Fix for dropdown options visibility */
+    .form-select option {
+        background-color: #333;
+        color: white;
+    }
+</style>
+
+<div class="container mt-5">
     <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card shadow-lg border-0 rounded-4">
-                <div class="card-header bg-white text-center py-4 border-bottom-0">
-                    <h2 class="fw-bold mb-0">Apply For Appointment</h2>
+        <div class="col-md-8">
+            <div class="glass-panel">
+                <div class="d-flex align-items-center mb-4 border-bottom border-secondary pb-3">
+                    <i class="fa-solid fa-calendar-plus fs-2 me-3 text-info"></i>
+                    <h2 class="mb-0">Make Appointment</h2>
                 </div>
-                <div class="card-body p-5">
-                    <form>
-                        <!-- Exercise Selection -->
-                        <div class="mb-4">
-                            <label class="form-label fw-bold ps-2">Exercise</label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-light border-end-0 rounded-start-pill"><i class="bi bi-activity"></i></span>
-                                <select class="form-select form-select-lg border-start-0 rounded-end-pill shadow-none" aria-label="Select Exercise">
-                                    <option selected disabled>Select Exercise...</option>
-                                    <option value="1">Cardio</option>
-                                    <option value="2">Weight Lifting</option>
-                                    <option value="3">Yoga</option>
-                                </select>
-                            </div>
-                        </div>
 
-                        <!-- Cotch Selection -->
-                        <div class="mb-4">
-                            <label class="form-label fw-bold ps-2">Cotch</label>
-                             <div class="input-group">
-                                <span class="input-group-text bg-light border-end-0 rounded-start-pill"><i class="bi bi-person-badge"></i></span>
-                                <select class="form-select form-select-lg border-start-0 rounded-end-pill shadow-none" aria-label="Select Cotch">
-                                    <option selected disabled>Select Cotch...</option>
-                                    <option value="1">Coach Bolt</option>
-                                    <option value="2">Coach Sarah</option>
-                                </select>
-                            </div>
-                        </div>
+                <form asp-action="BookAppointment" method="post">
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Select Exercise</label>
+                        <select name="exerciseId" id="exerciseSelect" class="form-select" required>
+                            <option value="">-- Choose Exercise --</option>
+                            @if (ViewBag.Exercises != null)
+                            {
+                                foreach (var item in ViewBag.Exercises)
+                                {
+                                    <option value="@item.exId">@item.exerciseType</option>
+                                }
+                            }
+                        </select>
+                    </div>
 
-                        <!-- Available Times Box -->
-                        <div class="mb-4">
-                            <label class="form-label fw-bold ps-2">Available Times</label>
-                            <div class="border rounded-4 p-3 bg-light" style="min-height: 100px;">
-                                <!-- This would be dynamically populated via AJAX based on Coach selection -->
-                                <div class="list-group list-group-flush bg-transparent">
-                                    <button type="button" class="list-group-item list-group-item-action bg-transparent border-0 rounded ps-2"><i class="bi bi-clock me-2"></i>10:00 AM - 11:00 AM</button>
-                                    <button type="button" class="list-group-item list-group-item-action bg-transparent border-0 rounded ps-2"><i class="bi bi-clock me-2"></i>02:00 PM - 03:00 PM</button>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Select Coach</label>
+                        <select name="coachId" id="coachSelect" class="form-select" required disabled>
+                            <option value="">-- Select Exercise First --</option>
+                        </select>
+                    </div>
 
-                        <!-- Submit Button -->
-                        <div class="text-center mt-5">
-                            <button type="submit" class="btn btn-danger btn-lg rounded-pill px-5 py-3 fw-bold w-100 shadow-sm">
-                                Ask Admin To Apply
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            
-            <div class="text-center mt-4">
-                <a asp-action="Index" class="text-decoration-none text-muted"><i class="bi bi-arrow-left me-1"></i> Back to Dashboard</a>
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Select Available Time</label>
+                        <select name="appointmentDate" id="timeSelect" class="form-select" required disabled>
+                            <option value="">-- Select Coach First --</option>
+                        </select>
+                        <small class="text-white-50">Times are based on coach's availability.</small>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-3 mt-5">
+                        <a asp-action="Index" class="btn btn-outline-light px-4">Cancel</a>
+                        <button type="submit" class="btn btn-info px-5 fw-bold">Book Now</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    // Elements
+    const exerciseSelect = document.getElementById('exerciseSelect');
+    const coachSelect = document.getElementById('coachSelect');
+    const timeSelect = document.getElementById('timeSelect');
+
+    // Filter Coaches by Exercise
+    exerciseSelect.addEventListener('change', function() {
+        const exerciseId = this.value;
+        
+        // Reset Coach and Time
+        coachSelect.innerHTML = '<option value="">Loading...</option>';
+        coachSelect.disabled = true;
+        
+        timeSelect.innerHTML = '<option value="">-- Select Coach First --</option>';
+        timeSelect.disabled = true;
+
+        if (exerciseId) {
+            fetch('/User/GetCoachesByExercise?exerciseId=' + exerciseId)
+                .then(response => response.json())
+                .then(data => {
+                    coachSelect.innerHTML = '<option value="">-- Choose Coach --</option>';
+                    if (data && data.length > 0) {
+                        data.forEach(coach => {
+                            const option = document.createElement('option');
+                            option.value = coach.value;
+                            option.text = coach.text;
+                            coachSelect.appendChild(option);
+                        });
+                        coachSelect.disabled = false;
+                    } else {
+                        coachSelect.innerHTML = '<option value="">No coaches available for this exercise</option>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    coachSelect.innerHTML = '<option value="">Error loading coaches</option>';
+                });
+        } else {
+            coachSelect.innerHTML = '<option value="">-- Choose Exercise First --</option>';
+        }
+    });
+
+    // Get Available Times for selected Coach
+    coachSelect.addEventListener('change', function() {
+        const coachId = this.value;
+        
+        // Reset time select
+        timeSelect.innerHTML = '<option value="">Loading...</option>';
+        timeSelect.disabled = true;
+
+        if (coachId) {
+            fetch('/User/GetCoachTimes?id=' + coachId)
+                .then(response => response.json())
+                .then(data => {
+                    timeSelect.innerHTML = '<option value="">-- Choose Time --</option>';
+                    if (data && data.length > 0) {
+                        data.forEach(time => {
+                            const option = document.createElement('option');
+                            option.value = time;
+                            option.text = time;
+                            timeSelect.appendChild(option);
+                        });
+                        timeSelect.disabled = false;
+                    } else {
+                        timeSelect.innerHTML = '<option value="">No available times</option>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    timeSelect.innerHTML = '<option value="">Error loading times</option>';
+                });
+        } else {
+            timeSelect.innerHTML = '<option value="">-- Select Coach First --</option>';
+        }
+    });
+</script>

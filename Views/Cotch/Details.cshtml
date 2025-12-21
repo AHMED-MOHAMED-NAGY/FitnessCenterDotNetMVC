@@ -1,84 +1,130 @@
 ﻿@model Cotch
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "My Details";
 }
 
-<h1>Details</h1>
+<style>
+    body {
+        background: url('/images/indexBackground.jpg') no-repeat center center fixed;
+        background-size: cover;
+        background-position: center;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: white;
+    }
+    .glass-panel {
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        padding: 40px;
+        color: white;
+    }
+    .detail-item {
+        margin-bottom: 20px;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        padding-bottom: 10px;
+    }
+    .detail-label {
+        color: #ffc107;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        display: block;
+        margin-bottom: 5px;
+    }
+    .detail-value {
+        font-size: 1.1rem;
+        font-weight: 500;
+    }
+    .status-badge {
+         font-size: 1rem;
+         padding: 5px 15px;
+         border-radius: 20px;
+         background: rgba(255,255,255,0.2);
+    }
+</style>
 
-<div>
-    <h4>Cotch</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.cotch_status)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.cotch_status)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.available_times)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.available_times)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.userName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.userName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.email)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.email)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.passwordHash)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.passwordHash)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.boy)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.boy)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.wight)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.wight)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.age)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.age)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.number)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.number)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.whoIam)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.whoIam)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.manId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-9">
+            <div class="glass-panel">
+                 <div class="d-flex justify-content-between align-items-center mb-4 border-bottom border-secondary pb-3">
+                    <div class="d-flex align-items-center">
+                        <i class="fa-solid fa-id-card fs-2 me-3 text-info"></i>
+                        <h2 class="mb-0">My Details</h2>
+                    </div>
+                    <a asp-action="Index" class="btn btn-outline-light btn-sm rounded-pill px-3">
+                        <i class="fa-solid fa-arrow-left me-2"></i>Back to Dashboard
+                    </a>
+                </div>
+
+                <div class="row">
+                    <!-- Personal Info -->
+                    <div class="col-md-6 detail-item">
+                        <span class="detail-label">Full Name</span>
+                        <div class="detail-value">@Model.name</div>
+                    </div>
+                    <div class="col-md-6 detail-item">
+                        <span class="detail-label">Username</span>
+                        <div class="detail-value">@Model.userName</div>
+                    </div>
+
+                    <div class="col-md-6 detail-item">
+                        <span class="detail-label">Email</span>
+                        <div class="detail-value">@Model.email</div>
+                    </div>
+                    <div class="col-md-6 detail-item">
+                        <span class="detail-label">Phone</span>
+                        <div class="detail-value">@Model.number</div>
+                    </div>
+
+                    <div class="col-md-4 detail-item">
+                        <span class="detail-label">Age</span>
+                        <div class="detail-value">@Model.age</div>
+                    </div>
+                    <div class="col-md-4 detail-item">
+                        <span class="detail-label">Height (cm)</span>
+                        <div class="detail-value">@Model.boy</div>
+                    </div>
+                    <div class="col-md-4 detail-item">
+                        <span class="detail-label">Weight (kg)</span>
+                        <div class="detail-value">@Model.wight</div>
+                    </div>
+
+                     <div class="col-md-6 detail-item">
+                        <span class="detail-label">Status</span>
+                        <div class="detail-value"><span class="status-badge">@Model.cotch_status</span></div>
+                    </div>
+                    
+                    <div class="col-12 detail-item border-0">
+                        <span class="detail-label">Available Times</span>
+                        <div class="detail-value">
+                            @if(Model.available_times != null && Model.available_times.Any())
+                            {
+                                <div class="d-flex flex-wrap gap-2 mt-2">
+                                @foreach(var time in Model.available_times)
+                                {
+                                    <span class="badge bg-secondary">@time</span>
+                                }
+                                </div>
+                            }
+                            else
+                            {
+                                <span class="text-white-50">No times set.</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4 text-end">
+                    <a asp-action="Edit" asp-route-id="@Model?.manId" class="btn btn-primary px-4 rounded-pill">
+                        <i class="fa-solid fa-pen-to-square me-2"></i>Edit Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

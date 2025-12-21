@@ -3,126 +3,243 @@
     ViewData["Title"] = "User Dashboard";
 }
 
-<div class="container py-4">
-    <!-- Top Bar -->
-    <div class="d-flex justify-content-between align-items-center mb-5 p-3 bg-white rounded shadow-sm border">
-        <div class="d-flex align-items-center">
-            <h3 class="mb-0 fw-bold me-3">@Model.userName</h3> <!-- User Name -->
+<style>
+    body {
+        background: url('/images/login.jpg') no-repeat center center fixed;
+        background-size: cover;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: white;
+    }
+
+    /* Animations */
+    @@keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @@keyframes slideIn {
+        from { opacity: 0; transform: translateX(-20px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+
+    .dashboard-container {
+        animation: fadeIn 0.8s ease-out;
+    }
+
+    /* Glass Effect */
+    .glass-panel {
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .glass-card {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 15px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        color: white;
+        display: block;
+        height: 100%;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .glass-card:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        color: #fff;
+        border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    .glass-card .card-body {
+        padding: 2rem;
+    }
+
+    .glass-header {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding-bottom: 15px;
+        margin-bottom: 20px;
+    }
+
+    /* Typography */
+    h3, h4, h5 {
+        font-weight: 600;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .text-muted-light {
+        color: rgba(255, 255, 255, 0.7) !important;
+    }
+
+    .icon-glow {
+        text-shadow: 0 0 15px rgba(255,255,255,0.5);
+    }
+
+    /* Badge Customization */
+    .badge-glass-success {
+        background: rgba(25, 135, 84, 0.8);
+        border: 1px solid rgba(255,255,255,0.2);
+        color: white;
+    }
+    
+    .badge-glass-warning {
+        background: rgba(255, 193, 7, 0.8);
+        border: 1px solid rgba(255,255,255,0.2);
+        color: black;
+    }
+
+    /* Daily Goal Specific */
+    .daily-goal-box {
+        background: rgba(255, 255, 255, 0.05);
+        border-left: 5px solid #4da3ff;
+    }
+</style>
+
+<div class="container py-5 dashboard-container">
+    @if (TempData["msg"] != null)
+    {
+        <div class="alert alert-success bg-transparent text-white border-white mb-4">
+            <i class="fa-solid fa-check-circle me-2"></i>@TempData["msg"]
         </div>
+    }
+    @if (TempData["err"] != null)
+    {
+        <div class="alert alert-danger bg-transparent text-white border-white mb-4">
+            <i class="fa-solid fa-circle-exclamation me-2"></i>@TempData["err"]
+        </div>
+    }
+    
+    <!-- Header -->
+    <div class="glass-panel d-flex justify-content-between align-items-center">
+        <a asp-action="EditProfile" class="d-flex align-items-center text-decoration-none text-white" style="transition: transform 0.2s;" onmouseover="this.style.transform='translateX(5px)'" onmouseout="this.style.transform='translateX(0)'">
+            <div class="rounded-circle bg-white text-dark d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px; font-size: 1.5rem;">
+                <i class="fa-solid fa-user"></i>
+            </div>
+            <div>
+                <h3 class="mb-0">Welcome back, @Model.userName</h3>
+                <small class="text-white-50">Edit Profile <i class="fa-solid fa-pen-to-square ms-1"></i></small>
+            </div>
+        </a>
         
-        <div class="d-flex gap-3 align-items-center">
-            <!-- AI Button -->
-            <a asp-action="PlanSelection" class="btn btn-outline-primary fw-bold px-4 rounded-pill">
-                <i class="bi bi-robot me-1"></i> AI Plan
-            </a>
-            
-            <!-- Notifications -->
-            <button class="btn btn-light position-relative rounded-circle p-2">
-                <i class="bi bi-bell fs-5"></i>
-                <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
-                    <span class="visually-hidden">New alerts</span>
-                </span>
-            </button>
-            
-            <!-- Logout -->
-            <a asp-controller="Home" asp-action="Index" class="btn btn-light rounded-circle p-2" title="Logout">
-                <i class="bi bi-box-arrow-right fs-5 text-danger"></i>
+        <div class="d-flex align-items-center gap-4">
+            @if(Model.cotch != null)
+            {
+                <div class="text-end d-none d-md-block border-end border-secondary pe-4 me-2">
+                    <div class="d-flex align-items-center justify-content-end mb-1">
+                        <i class="fa-solid fa-user-secret me-2 text-info"></i>
+                        <h5 class="mb-0">@Model.cotch.name</h5>
+                    </div>
+                    <small class="text-muted-light">Your Trainer</small>
+                </div>
+            }
+
+             <!-- Notifications Link -->
+            <a asp-controller="Home" asp-action="Notifications" class="text-white fs-4 position-relative text-decoration-none" title="Notifications">
+                <i class="fa-solid fa-bell"></i>
             </a>
         </div>
     </div>
 
-    <!-- Main Grid -->
-    <div class="row g-4 h-100">
-        <!-- Left Column: Actions Grid (2x2) -->
+    <div class="row g-4">
+        <!-- Main Actions -->
         <div class="col-lg-7">
-            <div class="row g-3 h-100">
-                <!-- Make App -->
+            <div class="row g-4">
+                <!-- Make Appointment -->
                 <div class="col-md-6">
-                    <a asp-action="MakeAppointment" class="card card-hover h-100 text-decoration-none border-0 shadow-sm bg-primary text-white">
-                        <div class="card-body d-flex flex-column justify-content-center align-items-center p-4 text-center">
-                            <i class="bi bi-calendar-plus fs-1 mb-3"></i>
-                            <h4 class="card-title fw-bold">Make App</h4>
-                            <small class="opacity-75">Schedule Appointment</small>
+                    <a asp-action="MakeAppointment" class="glass-card text-center">
+                        <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                            <i class="fa-solid fa-calendar-plus fs-1 mb-3 icon-glow text-info"></i>
+                            <h4 class="mb-2">Make Appointment</h4>
+                            <span class="text-muted-light">Schedule a session</span>
                         </div>
                     </a>
                 </div>
-                
-                 <!-- Send Msg Admin -->
+
+                <!-- Send MSG To Admin -->
                 <div class="col-md-6">
-                    <a href="#" class="card card-hover h-100 text-decoration-none border-0 shadow-sm bg-white text-dark">
-                        <div class="card-body d-flex flex-column justify-content-center align-items-center p-4 text-center">
-                            <i class="bi bi-envelope-paper fs-1 mb-3 text-secondary"></i>
-                            <h4 class="card-title fw-bold">Send MSG</h4>
-                            <small class="text-muted">To Admin</small>
+                    <a asp-action="SendToAdmin" class="glass-card text-center">
+                        <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                            <i class="fa-solid fa-envelope-open-text fs-1 mb-3 icon-glow text-warning"></i>
+                            <h4 class="mb-2">Contact Admin</h4>
+                            <span class="text-muted-light">Send a message</span>
                         </div>
                     </a>
                 </div>
 
                 <!-- Set Cotch -->
                 <div class="col-md-6">
-                    <a href="#" class="card card-hover h-100 text-decoration-none border-0 shadow-sm bg-white text-dark">
-                        <div class="card-body d-flex flex-column justify-content-center align-items-center p-4 text-center">
-                            <i class="bi bi-person-lines-fill fs-1 mb-3 text-secondary"></i>
-                            <h4 class="card-title fw-bold">Set Cotch</h4>
-                            <small class="text-muted">Choose your trainer</small>
+                    <a asp-action="SetDailyGoal" class="glass-card text-center">
+                        <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                            <i class="fa-solid fa-bullseye fs-1 mb-3 icon-glow text-success"></i>
+                            <h4 class="mb-2">Set Daily Goal</h4>
+                            <span class="text-muted-light">Define your objective</span>
                         </div>
                     </a>
                 </div>
 
-                 <!-- Send Msg Cotch -->
+                <!-- Send MSG To Coach -->
                 <div class="col-md-6">
-                    <a href="#" class="card card-hover h-100 text-decoration-none border-0 shadow-sm bg-white text-dark">
-                        <div class="card-body d-flex flex-column justify-content-center align-items-center p-4 text-center">
-                            <i class="bi bi-chat-dots fs-1 mb-3 text-secondary"></i>
-                            <h4 class="card-title fw-bold">Send MSG</h4>
-                            <small class="text-muted">To Cotch</small>
+                    <a asp-action="SendToCotch" class="glass-card text-center">
+                        <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                            <i class="fa-solid fa-comments fs-1 mb-3 icon-glow text-primary"></i>
+                            <h4 class="mb-2">Message Coach</h4>
+                            <span class="text-muted-light">Chat with trainer</span>
                         </div>
                     </a>
                 </div>
             </div>
         </div>
 
-        <!-- Right Column: Daily Goal -->
+        <!-- Daily Goal Panel -->
         <div class="col-lg-5">
-            <div class="card h-100 border-0 shadow rounded-4">
-                <div class="card-header bg-white border-bottom-0 pt-4 pb-0 px-4">
-                    <h3 class="fw-bold mb-0 text-success"><i class="bi bi-check2-circle me-2"></i>Daily Goal</h3>
+            <div class="glass-panel h-100">
+                <div class="glass-header d-flex align-items-center">
+                    <i class="fa-solid fa-bullseye me-2 text-danger fs-4"></i>
+                    <h4 class="mb-0">Daily Goal</h4>
                 </div>
-                <div class="card-body p-4">
-                     <div class="d-flex flex-column h-100">
-                        @if(Model.dailyGoal != null)
-                        {
-                            <div class="bg-light p-4 rounded-3 mb-3 border-start border-5 border-success flex-grow-1">
-                                <h5 class="text-muted mb-2">@Model.dailyGoal.date</h5>
-                                <p class="fs-4 fw-normal">@Model.dailyGoal.goal</p>
-                                
-                                <div class="mt-4">
-                                    <span class="badge @(Model.dailyGoal.status ? "bg-success" : "bg-warning") p-2 fs-6 rounded-pill">
+                
+                <div class="d-flex flex-column h-100 justify-content-center">
+                    @if(Model.dailyGoal != null)
+                    {
+                        <div class="daily-goal-box p-4 rounded-3 mb-3">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="badge badge-glass-success rounded-pill px-3">@Model.dailyGoal.date</span>
+                            </div>
+                            <p class="fs-4 fw-light mb-4">"@Model.dailyGoal.goal"</p>
+                            
+                            <div class="d-flex justify-content-between align-items-center mt-3 border-top border-white-50 pt-3">
+                                <div>
+                                    <span class="badge @(Model.dailyGoal.status ? "badge-glass-success" : "badge-glass-warning") rounded-pill px-3 py-2">
+                                        <i class="fa-solid @(Model.dailyGoal.status ? "fa-check-circle" : "fa-spinner fa-spin-pulse") me-1"></i>
                                         @(Model.dailyGoal.status ? "Completed" : "In Progress")
                                     </span>
                                 </div>
+                                
+                                <a asp-action="ToggleGoalStatus" class="btn btn-sm rounded-pill @(Model.dailyGoal.status ? "btn-outline-light" : "btn-success fw-bold shadow-sm") px-3">
+                                    <i class="fa-solid @(Model.dailyGoal.status ? "fa-rotate-left" : "fa-check") me-1"></i>
+                                    @(Model.dailyGoal.status ? "Undo" : "Mark Done")
+                                </a>
                             </div>
-                        }
-                        else
-                        {
-                            <div class="text-center py-5 text-muted">
-                                <i class="bi bi-list-check fs-1 mb-3 d-block opacity-25"></i>
-                                <p>No goal set for today.</p>
-                            </div>
-                        }
-                     </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5 text-muted-light">
+                            <i class="fa-solid fa-list-check fs-1 mb-3 opacity-50"></i>
+                            <p class="fs-5">No specific goal set for today.</p>
+                            <small>Check with your coach or set one!</small>
+                        </div>
+                    }
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-<style>
-    .card-hover {
-        transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .card-hover:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
-    }
-</style>

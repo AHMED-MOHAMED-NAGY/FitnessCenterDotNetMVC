@@ -1,10 +1,15 @@
 using Microsoft.Net.Http.Headers;
 using System.ComponentModel.DataAnnotations;
 
+using System.ComponentModel.DataAnnotations.Schema;
+
 public class User : Man
 {
     public DailyGoal? dailyGoal { get; set; }
-    public Cotch? cotch; // it will be available after read from db available cotchs has the same exercise
+    
+    public int? CotchId { get; set; }
+    [ForeignKey("CotchId")]
+    public Cotch? cotch { get; set; } // it will be available after read from db available cotchs has the same exercise
 
     [Display(Name = "Subscribe Status")]
     public string? subscribeStatus { get; set; } // left 30 days - finish

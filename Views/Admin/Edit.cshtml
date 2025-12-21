@@ -1,0 +1,112 @@
+@model Admin
+
+@{
+    ViewData["Title"] = "Edit Admin Profile";
+}
+
+<style>
+    body {
+        background: url('/images/indexBackground.jpg') no-repeat center center fixed;
+        background-size: cover;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: white;
+    }
+    
+    .glass-panel {
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        padding: 40px;
+        color: white;
+        max-width: 600px;
+        margin: 50px auto;
+    }
+
+    .form-control {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 12px;
+    }
+
+    .form-control:focus {
+        background: rgba(255, 255, 255, 0.15);
+        border-color: #4da3ff;
+        color: white;
+        box-shadow: 0 0 10px rgba(77,163,255,0.5);
+    }
+    
+    .form-control::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+    }
+
+    .btn-warning {
+        background-color: #ffc107;
+        border: none;
+        padding: 12px 30px;
+        font-weight: bold;
+        border-radius: 30px;
+        transition: all 0.3s;
+    }
+    
+    .btn-warning:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 193, 7, 0.4);
+    }
+    
+    .btn-outline-light:hover {
+        background: rgba(255,255,255,0.1);
+    }
+</style>
+
+<div class="container">
+    <div class="glass-panel">
+        <div class="d-flex align-items-center mb-4 border-bottom border-light pb-3">
+             <i class="fa-solid fa-user-shield fs-2 me-3 text-warning"></i>
+             <h2 class="mb-0 fw-bold">Edit Profile</h2>
+        </div>
+
+        @if (TempData["err"] != null)
+        {
+            <div class="alert alert-danger bg-transparent text-danger border-danger">
+                @TempData["err"]
+            </div>
+        }
+
+        <form asp-action="EditResult" method="post">
+            <input type="hidden" asp-for="manId" />
+            
+            <div class="mb-3">
+                <label asp-for="name" class="form-label">Full Name</label>
+                <input asp-for="name" class="form-control" placeholder="Enter your full name" />
+                <span asp-validation-for="name" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="userName" class="form-label">Username</label>
+                <input asp-for="userName" class="form-control" readonly style="opacity: 0.7; cursor: not-allowed;" />
+                <small class="text-white-50">Username cannot be changed.</small>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="email" class="form-label">Email Address</label>
+                <input asp-for="email" type="email" class="form-control" placeholder="name@example.com" />
+                <span asp-validation-for="email" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="number" class="form-label">Phone Number</label>
+                <input asp-for="number" type="tel" class="form-control" placeholder="Contact number" />
+                <span asp-validation-for="number" class="text-danger small"></span>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4">
+                <a asp-action="Index" class="btn btn-outline-light px-4 rounded-pill">Cancel</a>
+                <button type="submit" class="btn btn-warning px-5">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>

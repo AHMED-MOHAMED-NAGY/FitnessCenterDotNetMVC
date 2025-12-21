@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using fitnessCenter.Models;
 using fitnessCenter.Services;
 using fitnessCenter.Attributes;
+using Microsoft.EntityFrameworkCore;
 
 namespace fitnessCenter.Controllers;
 
@@ -25,11 +26,30 @@ public class HomeController : Controller
     [Guest]
     public IActionResult Login()
     {
+        // Auto-login check via Cookie
+        if (HttpContext.Request.Cookies.TryGetValue("FitnessRememberMe", out string userIdStr))
+        {
+            if (int.TryParse(userIdStr, out int userId))
+            {
+                var man = f_db.men.FirstOrDefault(x => x.manId == userId);
+                if (man != null)
+                {
+                    // Restore Session
+                    HttpContext.Session.SetInt32("UserId", man.manId);
+                    HttpContext.Session.SetString("UserName", man.userName);
+                    HttpContext.Session.SetString("Role", man.whoIam.ToString());
+
+                    if (man.whoIam == Roles.admin) return RedirectToAction("Index", "Admin");
+                    else if (man.whoIam == Roles.cotch) return RedirectToAction("Index", "Cotch");
+                    return RedirectToAction("Index", "User");
+                }
+            }
+        }
         return View();
     }
 
     [HttpPost]
-    public IActionResult LoginResult(Man m)
+    public IActionResult LoginResult(Man m, bool rememberMe)
     {
         // remove unused validations
         ModelState.Remove("passwordHash");
@@ -59,6 +79,19 @@ public class HomeController : Controller
                     HttpContext.Session.SetInt32("UserId", man.manId);
                     HttpContext.Session.SetString("UserName", man.userName);
                     HttpContext.Session.SetString("Role", man.whoIam.ToString());
+
+                    // Remember Me Cookie
+                    if (rememberMe)
+                    {
+                        CookieOptions option = new CookieOptions
+                        {
+                            Expires = DateTime.Now.AddDays(7),
+                            HttpOnly = true,
+                            IsEssential = true
+                        };
+                        Response.Cookies.Append("FitnessRememberMe", man.manId.ToString(), option);
+                    }
+
                     // verify is done you can login
                     // if user redirect to admin / coach / user control
                     if (man.whoIam == Roles.admin)
@@ -245,15 +278,50 @@ public class HomeController : Controller
     [Role] // Optional: Only logged-in users need to logout
     public IActionResult Logout()
     {
-        // 1. Clear the specific keys
-        HttpContext.Session.Remove("UserId");
-        HttpContext.Session.Remove("Role");
-        
-        // OR: Wipe the entire session clean (Safer)
+        // Clear all session data
         HttpContext.Session.Clear();
+        
+        // Delete Remember Me cookie
+        Response.Cookies.Delete("FitnessRememberMe");
 
-        // 2. Redirect to Login page (or Home)
         return RedirectToAction("Login", "Home");
+    }
+
+    public IActionResult Notifications()
+    {
+        int? id = HttpContext.Session.GetInt32("UserId");
+        if (id == null) return RedirectToAction("Login");
+
+        var man = f_db.men
+            .Include(m => m.notifications)
+            .FirstOrDefault(u => u.manId == id);
+
+        if (man == null) return RedirectToAction("Login");
+
+        // Sort notifications: Newest first
+        if (man.notifications != null)
+        {
+            man.notifications = man.notifications.OrderByDescending(n => n.notId).ToList();
+        }
+
+        // Mark all as read
+        var newlyReadIds = new HashSet<int>();
+        if (man.notifications != null)
+        {
+            var unread = man.notifications.Where(n => !n.IsRead).ToList();
+            if (unread.Any())
+            {
+                foreach (var n in unread)
+                {
+                    newlyReadIds.Add(n.notId);
+                    n.IsRead = true;
+                }
+                f_db.SaveChanges();
+            }
+        }
+        ViewBag.NewlyReadIds = newlyReadIds;
+
+        return View(man);
     }
 
     public IActionResult Info()

@@ -1,0 +1,115 @@
+@model Man
+
+@{
+    ViewData["Title"] = "Send Notification";
+}
+
+<style>
+    body {
+        background: url('/images/indexBackground.jpg') no-repeat center center fixed;
+        background-size: cover;
+        background-position: center;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: white;
+    }
+
+    .glass-panel {
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        padding: 40px;
+        color: white;
+    }
+
+    .form-control {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
+        font-size: 1.1rem;
+        padding: 15px;
+        border-radius: 12px;
+    }
+
+    .form-control:focus {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: #0d6efd;
+        color: white;
+        box-shadow: 0 0 10px rgba(13, 110, 253, 0.5);
+    }
+
+    .form-control::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+    }
+    
+    .btn-glass-primary {
+        background: rgba(13, 110, 253, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 10px 30px;
+        border-radius: 30px;
+        transition: all 0.3s;
+        font-weight: 600;
+        backdrop-filter: blur(5px);
+    }
+    
+    .btn-glass-primary:hover {
+        background: rgba(13, 110, 253, 1);
+        box-shadow: 0 0 15px rgba(13, 110, 253, 0.6);
+        transform: translateY(-2px);
+    }
+
+    .btn-glass-secondary {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 10px 30px;
+        border-radius: 30px;
+        transition: all 0.3s;
+        backdrop-filter: blur(5px);
+    }
+    
+    .btn-glass-secondary:hover {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="glass-panel">
+                <div class="text-center mb-4">
+                    <i class="fa-solid fa-paper-plane fs-1 mb-3 text-primary"></i>
+                    <h2 class="fw-bold">Send Message</h2>
+                    <p class="text-white-50">To recipient: <span class="text-white fw-bold">@Model.name</span> (@Model.whoIam)</p>
+                </div>
+                
+                <form asp-action="SendNotificationResult" method="post">
+                    <input type="hidden" name="id" value="@Model.manId" />
+                    
+                    <div class="mb-4">
+                        <label for="title" class="form-label fw-bold small text-uppercase">Subject</label>
+                        <input type="text" class="form-control" id="title" name="title" required placeholder="Header of your message...">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="msj" class="form-label fw-bold small text-uppercase">Content</label>
+                        <textarea class="form-control" id="msj" name="msj" rows="6" required placeholder="Type your message details here..."></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-3 mt-5">
+                        <a href="javascript:history.back()" class="btn btn-glass-secondary">
+                            <i class="fa-solid fa-xmark me-2"></i>Cancel
+                        </a>
+                        <button type="submit" class="btn btn-glass-primary">
+                            <i class="fa-solid fa-paper-plane me-2"></i>Send Message
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

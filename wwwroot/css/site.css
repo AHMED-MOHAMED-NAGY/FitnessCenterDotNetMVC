@@ -55,3 +55,17 @@ body {
 html a{
   text-decoration: none;
 }
+
+/* Global Footer Styling */
+footer, footer p, footer div, footer span 
+{
+    color: white !important;
+    text-shadow: 0 0 10px black !important;
+    font-weight: 700 !important;
+}
+
+footer a 
+{
+    color: #4da3ff !important;
+    font-weight: bold !important;
+}

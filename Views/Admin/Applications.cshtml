@@ -1,0 +1,101 @@
+@model fitnessCenter.Models.AdminApplicationsViewModel
+
+@{
+    ViewData["Title"] = "Applications & History";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    body {
+        background: url('/images/indexBackground.jpg') no-repeat center center fixed;
+        background-size: cover;
+    }
+    
+    .glass-section {
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 3rem;
+        box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    }
+
+    .table { color: white; margin-bottom: 0; --bs-table-bg: transparent; --bs-table-color: white; }
+    .table thead th { border-bottom: 1px solid rgba(255, 255, 255, 0.2); background: rgba(0, 0, 0, 0.4); color: #ffc107; }
+    .table tbody td { border-bottom: 1px solid rgba(255, 255, 255, 0.1); vertical-align: middle; }
+    .table tbody tr:hover { background-color: rgba(255,255,255,0.1) !important; color: white; }
+    
+    .btn-action-sm {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+        border-radius: 6px;
+        transition: 0.3s;
+    }
+</style>
+
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <h1 class="fw-bold text-white mb-0">Applications & History</h1>
+        <a asp-action="Index" class="btn btn-outline-light">
+            <i class="fa-solid fa-arrow-left me-2"></i>Dashboard
+        </a>
+    </div>
+
+    @if (TempData["msg"] != null)
+    {
+        <div class="alert alert-success bg-transparent text-white border-white mb-4">
+            <i class="fa-solid fa-check-circle me-2"></i>@TempData["msg"]
+        </div>
+    }
+
+
+
+    <!-- SECTION 2: APPOINTMENT HISTORY (Processed) -->
+    <div class="glass-section">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="text-info mb-0"><i class="fa-solid fa-clock-rotate-left me-2"></i>Processed Appointments History</h3>
+            <span class="badge bg-secondary">Total: @(Model.AppointmentHistory?.Count() ?? 0)</span>
+        </div>
+        
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Coach</th>
+                        <th>Exercise</th>
+                        <th>Date & Time</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.AppointmentHistory != null && Model.AppointmentHistory.Any())
+                    {
+                        foreach (var item in Model.AppointmentHistory)
+                        {
+                            <tr style="background: rgba(0,0,0,0.2);">
+                                <td>@item.User?.name</td>
+                                <td>@item.Cotch?.name</td>
+                                <td>@item.Exercise?.exerciseType</td>
+                                <td>@item.AppointmentDate</td>
+                                <td>
+                                    @if(item.Status == "Approved") { <span class="badge bg-success">Approved</span> }
+                                    else if(item.Status == "Rejected") { <span class="badge bg-danger">Rejected</span> }
+                                    else { <span class="badge bg-secondary">@item.Status</span> }
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center text-white-50 py-3">No appointment history found.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,74 @@
+@model User
+
+@{
+    ViewData["Title"] = "Message Student";
+}
+
+<style>
+    body {
+        background: url('/images/indexBackground.jpg') no-repeat center center fixed;
+        background-size: cover;
+        background-position: center;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: white;
+    }
+    
+    .glass-panel {
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        padding: 40px;
+        color: white;
+    }
+
+    .form-control {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
+    }
+
+    .form-control:focus {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: #0d6efd;
+        color: white;
+        box-shadow: 0 0 10px rgba(13, 110, 253, 0.5);
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="glass-panel">
+                <div class="d-flex align-items-center mb-4 border-bottom border-secondary pb-3">
+                    <i class="fa-solid fa-paper-plane fs-2 me-3 text-primary"></i>
+                    <div>
+                        <h2 class="mb-0">Message Student</h2>
+                        <small class="text-white-50">To: @Model.name</small>
+                    </div>
+                </div>
+
+                <form asp-action="SendNotificationResult" method="post">
+                    <input type="hidden" name="id" value="@Model.manId" />
+                    
+                    <div class="mb-4">
+                        <label for="title" class="form-label fw-bold">Subject</label>
+                        <input type="text" class="form-control" id="title" name="title" required placeholder="e.g. Feedback on progress">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="msj" class="form-label fw-bold">Message</label>
+                        <textarea class="form-control" id="msj" name="msj" rows="5" required placeholder="Type your message here..."></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-3 mt-4">
+                        <a asp-action="MyStudents" class="btn btn-outline-light px-4">Cancel</a>
+                        <button type="submit" class="btn btn-primary px-5 fw-bold"><i class="bi bi-send me-2"></i>Send</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

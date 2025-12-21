@@ -1,87 +1,130 @@
 ﻿@model IEnumerable<User>
 
 @{
-    ViewData["Title"] = "List Users";
+    ViewData["Title"] = "User Management";
 }
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.subscribeStatus)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.userName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.email)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.boy)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.wight)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.age)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.number)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.whoIam)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.subscribeStatus)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.userName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.email)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.boy)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.wight)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.age)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.number)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.whoIam)
-            </td>
-            <td>
-                @if (item.whoIam != Roles.admin)
-                {
-                    <a asp-action="MakeUsrAdmin" asp-route-id="@item.manId">Make Admin</a>
-                    <span> | </span>
-                }
-                @if (item.whoIam != Roles.cotch)
-                {
-                    <a asp-action="MakeUsrCotch" asp-route-id="@item.manId">Make Cotch</a>
-                    <span> | </span>
-                }
-                <a asp-action="DetailsUser" asp-route-id="@item.manId">Details</a> |
-                <a asp-action="DeleteUser" asp-route-id="@item.manId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<style>
+    body {
+        background: url('/images/indexBackground.jpg') no-repeat center center fixed;
+        background-size: cover;
+        background-position: center;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: white;
+    }
+
+    .glass-panel {
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        padding: 30px;
+    }
+
+    .glass-table {
+        width: 100%;
+        color: white;
+        border-collapse: separate;
+        border-spacing: 0 10px;
+    }
+
+    .glass-table thead th {
+        border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        padding: 15px;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        letter-spacing: 1px;
+        color: rgba(255,255,255,0.6);
+    }
+
+    .glass-table tbody tr {
+        background: rgba(255, 255, 255, 0.05);
+        transition: all 0.2s;
+    }
+
+    .glass-table tbody tr:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transform: scale(1.005);
+    }
+
+    .glass-table td {
+        padding: 15px;
+        vertical-align: middle;
+    }
+    
+    .glass-table td:first-child { border-top-left-radius: 10px; border-bottom-left-radius: 10px; }
+    .glass-table td:last-child { border-top-right-radius: 10px; border-bottom-right-radius: 10px; }
+
+    .dropdown-menu-glass {
+        background: rgba(0, 0, 0, 0.9);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.2);
+    }
+    
+    .dropdown-item { color: white; }
+    .dropdown-item:hover { background: rgba(255,255,255,0.2); color:white;}
+</style>
+
+<div class="container mt-5">
+    <div class="glass-panel">
+        <div class="d-flex justify-content-between align-items-center mb-4 border-bottom border-secondary pb-3">
+             <div class="d-flex align-items-center">
+                <i class="fa-solid fa-users fs-2 me-3 text-primary"></i>
+                <h2 class="mb-0">User Management</h2>
+            </div>
+            <a asp-action="Index" class="btn btn-outline-light btn-sm rounded-pill px-3">
+                <i class="fa-solid fa-arrow-left me-2"></i>Dashboard
+            </a>
+        </div>
+
+        @if (TempData["msg"] != null)
+        {
+            <div class="alert alert-success bg-transparent border-success text-success mb-3">@TempData["msg"]</div>
+        }
+
+        <div class="table-responsive">
+            <table class="glass-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>UserName</th>
+                        <th>Status</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="fw-bold">@item.name</td>
+                            <td>@item.userName</td>
+                            <td>
+                                @if(item.subscribeStatus == "Active") { <span class="badge bg-success">Active</span> }
+                                else if(item.subscribeStatus == "New") { <span class="badge bg-warning text-dark">New</span> }
+                                else { <span class="badge bg-secondary">@item.subscribeStatus</span> }
+                            </td>
+                            <td class="text-end">
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                        Manage
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-glass dropdown-menu-end">
+                                        <li><a class="dropdown-item" asp-action="DetailsUser" asp-route-id="@item.manId"><i class="fa-solid fa-eye me-2"></i>Details</a></li>
+                                        <li><a class="dropdown-item" asp-action="SendNotification" asp-route-id="@item.manId"><i class="fa-solid fa-envelope me-2"></i>Message</a></li>
+                                        <li><hr class="dropdown-divider bg-secondary"></li>
+                                        <li><a class="dropdown-item text-warning" asp-action="MakeUsrAdmin" asp-route-id="@item.manId"><i class="fa-solid fa-crown me-2"></i>Make Admin</a></li>
+                                        <li><a class="dropdown-item text-info" asp-action="MakeUsrCotch" asp-route-id="@item.manId"><i class="fa-solid fa-user-tie me-2"></i>Make Coach</a></li>
+                                        <li><hr class="dropdown-divider bg-secondary"></li>
+                                        <li><a class="dropdown-item text-danger" asp-action="DeleteUser" asp-route-id="@item.manId"><i class="fa-solid fa-trash me-2"></i>Delete</a></li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

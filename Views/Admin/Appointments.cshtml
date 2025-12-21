@@ -1,0 +1,159 @@
+@model IEnumerable<fitnessCenter.Models.Appointment>
+
+@{
+    ViewData["Title"] = "Manage Appointments";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    body {
+        background: url('/images/indexBackground.jpg') no-repeat center center fixed;
+        background-size: cover;
+    }
+    
+    .glass-table {
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        overflow: hidden;
+        margin-top: 2rem;
+        box-shadow: 0 0 20px rgba(255, 107, 107, 0.2);
+    }
+    
+    .glass-header {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 1.5rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .table { color: white; margin-bottom: 0; --bs-table-bg: transparent; --bs-table-color: white; }
+    .table thead th { border-bottom: 1px solid rgba(255, 255, 255, 0.2); background: rgba(0, 0, 0, 0.4); color: #ffc107; }
+    .table tbody td { border-bottom: 1px solid rgba(255, 255, 255, 0.1); vertical-align: middle; }
+    .table tbody tr:hover { background-color: rgba(255,255,255,0.1) !important; color: white; }
+    
+    .glass-btn-success {
+        background: rgba(40, 167, 69, 0.2);
+        color: #51cf66;
+        border: 1px solid rgba(40, 167, 69, 0.4);
+        padding: 0.4rem 1rem;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+    
+    .glass-btn-success:hover {
+        background: rgba(40, 167, 69, 0.4);
+        box-shadow: 0 0 15px rgba(40, 167, 69, 0.4);
+        color: white;
+    }
+
+    .glass-btn-danger {
+        background: rgba(220, 53, 69, 0.2);
+        color: #ff6b6b;
+        border: 1px solid rgba(220, 53, 69, 0.4);
+        padding: 0.4rem 1rem;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+    
+    .glass-btn-danger:hover {
+        background: rgba(220, 53, 69, 0.4);
+        box-shadow: 0 0 15px rgba(220, 53, 69, 0.4);
+        color: white;
+    }
+</style>
+
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="fw-bold text-white mb-0">Appointments Requests</h1>
+            <p class="text-white-50">Manage student booking requests.</p>
+        </div>
+        <a asp-action="Index" class="btn btn-outline-light">
+            <i class="fa-solid fa-arrow-left me-2"></i>Back to Dashboard
+        </a>
+    </div>
+
+    @if (TempData["msg"] != null)
+    {
+        <div class="alert alert-success bg-transparent text-white border-white">
+            <i class="fa-solid fa-check-circle me-2"></i>@TempData["msg"]
+        </div>
+    }
+
+    <div class="glass-table">
+        <div class="glass-header">
+            <div>
+                <h5 class="mb-0 text-white"><i class="fa-solid fa-calendar-check me-2"></i>Pending Requests</h5>
+                <span class="badge bg-warning text-dark rounded-pill mt-1">Total: @(Model?.Count() ?? 0)</span>
+            </div>
+            <div>
+                <a asp-action="ApproveAllAppointments" class="btn btn-success btn-sm me-2"><i class="fa-solid fa-check-double me-1"></i>Approve All</a>
+                <a asp-action="RejectAllAppointments" class="btn btn-danger btn-sm"><i class="fa-solid fa-ban me-1"></i>Reject All</a>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Coach</th>
+                        <th>Exercise</th>
+                        <th>Date & Time</th>
+                        <th>Status</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr style="background: rgba(0,0,0,0.2);">
+                                <td>@item.User?.name</td>
+                                <td>@item.Cotch?.name</td>
+                                <td>@item.Exercise?.exerciseType</td>
+                                <td>@item.AppointmentDate</td>
+                                <td>
+                                    @if(item.Status == "Pending") { <span class="badge bg-warning text-dark">Pending</span> }
+                                    else if(item.Status == "Approved") { <span class="badge bg-success">Approved</span> }
+                                    else if(item.Status == "Rejected") { <span class="badge bg-danger">Rejected</span> }
+                                    else { <span class="badge bg-secondary">@item.Status</span> }
+                                </td>
+                                <td class="text-end">
+                                    @if (item.Status == "Pending")
+                                    {
+                                        <a asp-action="ApproveAppointment" asp-route-id="@item.Id" class="glass-btn-success me-2">
+                                            <i class="fa-solid fa-check me-1"></i>Apply
+                                        </a>
+                                        <a asp-action="RejectAppointment" asp-route-id="@item.Id" class="glass-btn-danger">
+                                            <i class="fa-solid fa-xmark me-1"></i>Reject
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-white-50 small">Processed</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center text-white-50 py-4">No pending appointment requests.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

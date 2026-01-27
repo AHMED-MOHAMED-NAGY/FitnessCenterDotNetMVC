@@ -9,7 +9,12 @@ namespace fitnessCenter.Controllers
     [Role("admin")]
     public class AdminController : Controller
     {
-        private FitnessContext f_db = new FitnessContext();
+        private readonly FitnessContext f_db;
+
+        public AdminController(FitnessContext context)
+        {
+            f_db = context;
+        }
         public IActionResult Index()
         {
             return View();

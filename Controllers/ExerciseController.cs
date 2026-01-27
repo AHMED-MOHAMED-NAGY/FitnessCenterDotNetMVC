@@ -10,7 +10,12 @@ namespace fitnessCenter.Controllers
     [ApiController]
     public class ExerciseController : ControllerBase
     {
-        private FitnessContext f_db = new FitnessContext();
+        private readonly FitnessContext f_db;
+
+        public ExerciseController(FitnessContext context)
+        {
+            f_db = context;
+        }
         // GET: api/<ExerciseController>
         [HttpGet]
         public List<Exercise> Get()

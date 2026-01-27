@@ -13,7 +13,12 @@ namespace fitnessCenter.Controllers
     [Role("cotch")]
     public class CotchController : Controller
     {
-        private FitnessContext f_db = new FitnessContext();
+        private readonly FitnessContext f_db;
+
+        public CotchController(FitnessContext context)
+        {
+            f_db = context;
+        }
 
 
         // GET: Cotch

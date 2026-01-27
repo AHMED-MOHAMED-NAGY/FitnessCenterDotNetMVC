@@ -10,12 +10,13 @@ namespace fitnessCenter.Controllers;
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
-    private FitnessContext f_db = new FitnessContext();
+    private readonly FitnessContext f_db;
     private readonly EmailSender _emailSender;
 
-    public HomeController(ILogger<HomeController> logger, EmailSender emailSender)
+    public HomeController(ILogger<HomeController> logger, FitnessContext context, EmailSender emailSender)
     {
         _logger = logger;
+        f_db = context;
         _emailSender = emailSender;
     }
 

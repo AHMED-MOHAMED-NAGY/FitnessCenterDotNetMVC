@@ -10,11 +10,12 @@ namespace fitnessCenter.Controllers
     [Role("user")]
     public class UserController : Controller
     {
-        private FitnessContext f_db = new FitnessContext();
+        private readonly FitnessContext f_db;
         private readonly AIService _aiService;
 
-        public UserController(AIService aiService)
+        public UserController(FitnessContext context, AIService aiService)
         {
+            f_db = context;
             _aiService = aiService;
         }
 
